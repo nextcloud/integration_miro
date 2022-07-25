@@ -98,6 +98,11 @@ class ConfigController extends Controller {
 	 * @return DataResponse
 	 */
 	public function setConfig(array $values): DataResponse {
+		// revoke the token
+		if (isset($values['token']) && $values['token'] === '') {
+			$this->miroAPIService->revokeToken($this->userId);
+		}
+
 		foreach ($values as $key => $value) {
 			$this->config->setUserValue($this->userId, Application::APP_ID, $key, $value);
 		}
@@ -109,11 +114,11 @@ class ConfigController extends Controller {
 			} else {
 				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'user_id');
 				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'user_name');
-				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'user_displayname');
+				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'team_id');
+				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'team_name');
 				$this->config->deleteUserValue($this->userId, Application::APP_ID, 'token');
 				$result['user_id'] = '';
 				$result['user_name'] = '';
-				$result['user_displayname'] = '';
 			}
 			// if the token is set, cleanup refresh token and expiration date
 			$this->config->deleteUserValue($this->userId, Application::APP_ID, 'refresh_token');
@@ -140,11 +145,11 @@ class ConfigController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @param string $user_name
-	 * @param string $user_displayname
+	 * @param string $user_id
 	 * @return TemplateResponse
 	 */
-	public function popupSuccessPage(string $user_name, string $user_displayname): TemplateResponse {
-		$this->initialStateService->provideInitialState('popup-data', ['user_name' => $user_name, 'user_displayname' => $user_displayname]);
+	public function popupSuccessPage(string $user_name, string $user_id): TemplateResponse {
+		$this->initialStateService->provideInitialState('popup-data', ['user_name' => $user_name, 'user_id' => $user_id]);
 		return new TemplateResponse(Application::APP_ID, 'popupSuccess', [], TemplateResponse::RENDER_AS_GUEST);
 	}
 
@@ -190,18 +195,13 @@ class ConfigController extends Controller {
 				$this->config->setUserValue($this->userId, Application::APP_ID, 'team_id', $result['team_id']);
 				$this->config->setUserValue($this->userId, Application::APP_ID, 'scope', $result['scope']);
 
-				// TODO
-//				$userInfo = $this->storeUserInfo();
-				$userInfo = [
-					'user_name'	=> 'toto',
-					'user_displayname' => 'super toto',
-				];
+				$userInfo = $this->storeUserInfo();
 				$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
 				if ($usePopup) {
 					return new RedirectResponse(
 						$this->urlGenerator->linkToRoute('integration_miro.config.popupSuccessPage', [
 							'user_name' => $userInfo['user_name'] ?? '',
-							'user_displayname' => $userInfo['user_displayname'] ?? '',
+							'user_id' => $userInfo['user_id'] ?? '',
 						])
 					);
 				} else {
@@ -230,21 +230,22 @@ class ConfigController extends Controller {
 	}
 
 	/**
-	 * @param string $miroUrl
 	 * @return string
 	 */
-	private function storeUserInfo(string $miroUrl): array {
-		$info = $this->miroAPIService->request($this->userId, $miroUrl, 'users/me');
-		if (isset($info['first_name'], $info['last_name'], $info['id'], $info['username'])) {
-			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_id', $info['id'] ?? '');
-			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_name', $info['username'] ?? '');
-			$userDisplayName = ($info['first_name'] ?? '') . ' ' . ($info['last_name'] ?? '');
-			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_displayname', $userDisplayName);
+	private function storeUserInfo(): array {
+		$info = $this->miroAPIService->request($this->userId, 'v1/oauth-token');
+		if (isset(
+				$info['team'], $info['team']['name'], $info['team']['id'],
+				$info['user'], $info['user']['name'], $info['user']['id']
+		)) {
+			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_id', $info['user']['id'] ?? '');
+			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_name', $info['user']['name'] ?? '');
+			$this->config->setUserValue($this->userId, Application::APP_ID, 'team_id', $info['team']['id'] ?? '');
+			$this->config->setUserValue($this->userId, Application::APP_ID, 'team_name', $info['team']['name'] ?? '');
 
 			return [
-				'user_id' => $info['id'] ?? '',
-				'user_name' => $info['username'] ?? '',
-				'user_displayname' => $userDisplayName,
+				'user_id' => $info['user']['id'] ?? '',
+				'user_name' => $info['user']['name'] ?? '',
 			];
 		} else {
 			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_id', '');
@@ -252,8 +253,6 @@ class ConfigController extends Controller {
 			return [
 				'user_id' => '',
 				'user_name' => '',
-				'user_displayname' => '',
-				// TODO change perso settings to get/check user name errors correctly
 			];
 		}
 	}

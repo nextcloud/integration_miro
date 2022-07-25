@@ -4,16 +4,9 @@
 			<MiroIcon class="miro-icon" />
 			{{ t('integration_miro', 'Miro integration') }}
 		</h2>
-		<CheckboxRadioSwitch
-			class="field"
-			:checked.sync="state.navigation_enabled"
-			@update:checked="onNavigationChange">
-			{{ t('integration_miro', 'Enable navigation link') }}
-		</CheckboxRadioSwitch>
 		<p v-if="!showOAuth && !connected" class="settings-hint">
 			{{ t('integration_miro', 'Ask your administrator to configure the Miro integration in Nextcloud.') }}
 		</p>
-		<br>
 		<div id="miro-content">
 			<Button v-if="!connected && showOAuth"
 				id="miro-connect"
@@ -98,7 +91,7 @@ export default {
 			return !!this.state.token && !!this.state.user_name
 		},
 		connectedDisplayName() {
-			return this.state.user_displayname + ' (' + this.state.user_name + ')'
+			return this.state.user_name
 		},
 	},
 
@@ -125,16 +118,17 @@ export default {
 		onSearchChange(newValue) {
 			this.saveOptions({ search_boards_enabled: newValue ? '1' : '0' })
 		},
-		onNavigationChange(newValue) {
-			this.saveOptions({ navigation_enabled: newValue ? '1' : '0' })
-		},
 		saveOptions(values) {
 			const req = {
 				values,
 			}
 			const url = generateUrl('/apps/integration_miro/config')
 			axios.put(url, req).then((response) => {
-				showSuccess(t('integration_miro', 'Miro options saved'))
+				if (values.token === '' && response.data.user_name === '') {
+					showSuccess(t('integration_miro', 'Successfully disconnected'))
+				} else {
+					showSuccess(t('integration_miro', 'Miro options saved'))
+				}
 			}).catch((error) => {
 				showError(
 					t('integration_miro', 'Failed to save Miro options')
@@ -156,7 +150,7 @@ export default {
 					.then((data) => {
 						this.state.token = 'dummyToken'
 						this.state.user_name = data.userName
-						this.state.user_displayname = data.userDisplayName
+						this.state.user_id = data.userId
 					})
 			} else {
 				oauthConnect(this.state.client_id, 'settings')

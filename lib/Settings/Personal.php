@@ -44,10 +44,8 @@ class Personal implements ISettings {
 	public function getForm(): TemplateResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
 		$searchBoardsEnabled = $this->config->getUserValue($this->userId, Application::APP_ID, 'search_boards_enabled', '0');
-		$navigationEnabled = $this->config->getUserValue($this->userId, Application::APP_ID, 'navigation_enabled', '0');
-		$mmUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
-		$mmUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
-		$mmUserDisplayName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_displayname');
+		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
+		$miroUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
 		$adminOauthUrl = $this->config->getAppValue(Application::APP_ID, 'oauth_instance_url');
 		$url = $this->config->getUserValue($this->userId, Application::APP_ID, 'url', $adminOauthUrl) ?: $adminOauthUrl;
 
@@ -62,11 +60,9 @@ class Personal implements ISettings {
 			'client_id' => $clientID,
 			'client_secret' => $clientSecret,
 			'use_popup' => ($usePopup === '1'),
-			'user_id' => $mmUserId,
-			'user_name' => $mmUserName,
-			'user_displayname' => $mmUserDisplayName,
+			'user_id' => $miroUserId,
+			'user_name' => $miroUserName,
 			'search_boards_enabled' => ($searchBoardsEnabled === '1'),
-			'navigation_enabled' => ($navigationEnabled === '1'),
 		];
 		$this->initialStateService->provideInitialState('user-config', $userConfig);
 		return new TemplateResponse(Application::APP_ID, 'personalSettings');

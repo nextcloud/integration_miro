@@ -174,11 +174,12 @@ class MiroAPIService {
 		$this->checkTokenExpiration($userId);
 		$accessToken = $this->config->getUserValue($userId, Application::APP_ID, 'token');
 		try {
-			$url = Application::MIRO_API_BASE_URL . '/v2/' . $endPoint;
+			$url = Application::MIRO_API_BASE_URL . '/' . $endPoint;
 			$options = [
 				'headers' => [
 					'Authorization'  => 'Bearer ' . $accessToken,
 //					'Content-Type' => 'application/x-www-form-urlencoded',
+					'Accept' => 'application/json',
 					'User-Agent'  => Application::INTEGRATION_USER_AGENT,
 				],
 			];
@@ -341,5 +342,11 @@ class MiroAPIService {
 			$this->logger->warning('Miro OAuth error : '.$e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
+	}
+
+	public function revokeToken(string $userId): bool {
+		$token = $this->config->getUserValue($userId, Application::APP_ID, 'token');
+		$revokeResponse = $this->request($userId, 'v1/oauth/revoke?access_token=' . $token, [], 'POST', false);
+		return $revokeResponse === '';
 	}
 }
