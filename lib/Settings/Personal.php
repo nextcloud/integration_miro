@@ -46,8 +46,6 @@ class Personal implements ISettings {
 		$searchBoardsEnabled = $this->config->getUserValue($this->userId, Application::APP_ID, 'search_boards_enabled', '0');
 		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
 		$miroUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
-		$adminOauthUrl = $this->config->getAppValue(Application::APP_ID, 'oauth_instance_url');
-		$url = $this->config->getUserValue($this->userId, Application::APP_ID, 'url', $adminOauthUrl) ?: $adminOauthUrl;
 
 		// for OAuth
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');

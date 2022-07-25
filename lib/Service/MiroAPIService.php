@@ -153,7 +153,7 @@ class MiroAPIService {
 	 * @throws Exception
 	 */
 	public function getMyBoards(string $userId): array {
-		$result = $this->request($userId, 'boards');
+		$result = $this->request($userId, 'v2/boards');
 		if (isset($result['error'])) {
 			return $result;
 		}
