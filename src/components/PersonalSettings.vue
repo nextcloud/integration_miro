@@ -21,7 +21,7 @@
 			</Button>
 			<div v-if="connected" class="field">
 				<label class="miro-connected">
-					<a class="icon icon-checkmark-color" />
+					<CheckIcon :size="24" class="icon" />
 					{{ t('integration_miro', 'Connected as {user}', { user: connectedDisplayName }) }}
 				</label>
 				<Button id="miro-rm-cred" @click="onLogoutClick">
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import CheckIcon from 'vue-material-design-icons/Check'
 import OpenInNewIcon from 'vue-material-design-icons/OpenInNew'
 import CloseIcon from 'vue-material-design-icons/Close'
 import InformationVariantIcon from 'vue-material-design-icons/InformationVariant'
@@ -71,6 +72,7 @@ export default {
 		OpenInNewIcon,
 		CloseIcon,
 		InformationVariantIcon,
+		CheckIcon,
 	},
 
 	props: [],

@@ -212,9 +212,9 @@ class ConfigController extends Controller {
 							$this->urlGenerator->linkToRoute('settings.PersonalSettings.index', ['section' => 'connected-accounts']) .
 							'?miroToken=success'
 						);
-					} elseif ($oauthOrigin === 'dashboard') {
+					} elseif ($oauthOrigin === 'app') {
 						return new RedirectResponse(
-							$this->urlGenerator->linkToRoute('dashboard.dashboard.index')
+							$this->urlGenerator->linkToRoute(Application::APP_ID . '.page.index')
 						);
 					}
 				}

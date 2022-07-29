@@ -14,9 +14,9 @@ webpackConfig.stats = {
 
 const appId = 'integration_miro'
 webpackConfig.entry = {
+	main: { import: path.join(__dirname, 'src', 'main.js'), filename: appId + '-main.js' },
 	personalSettings: { import: path.join(__dirname, 'src', 'personalSettings.js'), filename: appId + '-personalSettings.js' },
 	adminSettings: { import: path.join(__dirname, 'src', 'adminSettings.js'), filename: appId + '-adminSettings.js' },
-	dashboard: { import: path.join(__dirname, 'src', 'dashboard.js'), filename: appId + '-dashboard.js' },
 	popupSuccess: { import: path.join(__dirname, 'src', 'popupSuccess.js'), filename: appId + '-popupSuccess.js' },
 }
 

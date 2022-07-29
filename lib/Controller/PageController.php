@@ -1,0 +1,103 @@
+<?php
+/**
+ * Nextcloud - Miro integration
+ *
+ * This file is licensed under the Affero General Public License version 3 or
+ * later. See the COPYING file.
+ *
+ * @author Julien Veyssier <eneiluj@posteo.net>
+ * @copyright Julien Veyssier 2022
+ */
+
+namespace OCA\Miro\Controller;
+
+use OCA\Miro\Service\MiroAPIService;
+use OCP\App\IAppManager;
+use OCP\AppFramework\Services\IInitialState;
+use OCP\IConfig;
+use Psr\Log\LoggerInterface;
+use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\TemplateResponse;
+use OCP\IRequest;
+
+use OCA\Miro\AppInfo\Application;
+
+class PageController extends Controller {
+
+	/**
+	 * @var string|null
+	 */
+	private $userId;
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+	/**
+	 * @var IConfig
+	 */
+	private $config;
+	/**
+	 * @var IAppManager
+	 */
+	private $appManager;
+	/**
+	 * @var IInitialState
+	 */
+	private $initialStateService;
+	/**
+	 * @var MiroAPIService
+	 */
+	private $miroAPIService;
+
+	public function __construct(string $appName,
+								IRequest $request,
+								IConfig $config,
+								IAppManager $appManager,
+								IInitialState $initialStateService,
+								LoggerInterface $logger,
+								MiroAPIService $miroAPIService,
+								?string $userId) {
+		parent::__construct($appName, $request);
+		$this->userId = $userId;
+		$this->logger = $logger;
+		$this->config = $config;
+		$this->appManager = $appManager;
+		$this->initialStateService = $initialStateService;
+		$this->miroAPIService = $miroAPIService;
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 *
+	 * @return TemplateResponse
+	 */
+	public function index(): TemplateResponse {
+		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
+		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
+		// don't expose the client secret to users
+		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret') !== '';
+		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
+
+		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
+		$miroUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
+
+		$talkEnabled = $this->appManager->isEnabledForUser('spreed', $this->userId);
+
+		$pageInitialState = [
+			'token' => $token ? 'dummyTokenContent' : '',
+			'client_id' => $clientID,
+			'client_secret' => $clientSecret,
+			'use_popup' => $usePopup,
+			'user_id' => $miroUserId,
+			'user_name' => $miroUserName,
+			'talk_enabled' => $talkEnabled,
+			'board_list' => [],
+		];
+		if ($token !== '') {
+			$pageInitialState['board_list'] = $this->miroAPIService->getMyBoards($this->userId);
+		}
+		$this->initialStateService->provideInitialState('miro-state', $pageInitialState);
+		return new TemplateResponse(Application::APP_ID, 'main', []);
+	}
+}

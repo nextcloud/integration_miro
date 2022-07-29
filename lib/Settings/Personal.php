@@ -51,13 +51,13 @@ class Personal implements ISettings {
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
 		// don't expose the client secret to users
 		$clientSecret = ($this->config->getAppValue(Application::APP_ID, 'client_secret') !== '');
-		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0');
+		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
 
 		$userConfig = [
 			'token' => $token ? 'dummyTokenContent' : '',
 			'client_id' => $clientID,
 			'client_secret' => $clientSecret,
-			'use_popup' => ($usePopup === '1'),
+			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,
 			'search_boards_enabled' => ($searchBoardsEnabled === '1'),

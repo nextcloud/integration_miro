@@ -11,6 +11,8 @@
 
 return [
     'routes' => [
+		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+
 		['name' => 'config#isUserConnected', 'url' => '/is-connected', 'verb' => 'GET'],
 		['name' => 'config#oauthRedirect', 'url' => '/oauth-redirect', 'verb' => 'GET'],
         ['name' => 'config#setConfig', 'url' => '/config', 'verb' => 'PUT'],
@@ -18,6 +20,8 @@ return [
 		['name' => 'config#popupSuccessPage', 'url' => '/popup-success', 'verb' => 'GET'],
 
 		['name' => 'miroAPI#getBoards', 'url' => '/boards', 'verb' => 'GET'],
+		['name' => 'miroAPI#createBoard', 'url' => '/board', 'verb' => 'POST'],
+		['name' => 'miroAPI#deleteBoard', 'url' => '/board/{id}', 'verb' => 'DELETE'],
         ['name' => 'miroAPI#getUserAvatar', 'url' => '/users/{userId}/image', 'verb' => 'GET'],
         ['name' => 'miroAPI#getTeamAvatar', 'url' => '/teams/{teamId}/image', 'verb' => 'GET'],
     ]

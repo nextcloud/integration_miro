@@ -70,7 +70,7 @@ class MiroAPIController extends Controller {
 	 * @return DataDisplayResponse|RedirectResponse
 	 */
 	public function getUserAvatar(string $userId, int $useFallback = 1) {
-		$result = $this->miroAPIService->getUserAvatar($this->userId, $userId, $this->miroUrl);
+		$result = $this->miroAPIService->getUserAvatar($this->userId, $userId);
 		if (isset($result['avatarContent'])) {
 			$response = new DataDisplayResponse($result['avatarContent']);
 			$response->cacheFor(60 * 60 * 24);
