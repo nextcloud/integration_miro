@@ -81,38 +81,6 @@ class MiroAPIService {
 
 	/**
 	 * @param string $userId
-	 * @param string $term
-	 * @param int $offset
-	 * @param int $limit
-	 * @return array
-	 * @throws Exception
-	 */
-	public function searchBoards(string $userId, string $term, int $offset = 0, int $limit = 5): array {
-		$params = [
-			'include_deleted_channels' => true,
-			'is_or_search' => true,
-			'page' => 0,
-			'per_page' => 60,
-			'terms' => $term,
-			'time_zone_offset' => 7200,
-		];
-		$result = $this->request($userId, 'boards/search', $params, 'POST');
-		$posts = $result['posts'] ?? [];
-
-		// sort post by creation date, DESC
-		usort($posts, function($a, $b) {
-			$ta = (int) $a['create_at'];
-			$tb = (int) $b['create_at'];
-			return ($ta > $tb) ? -1 : 1;
-		});
-
-		$posts = array_slice($posts, $offset, $limit);
-
-		return $posts;
-	}
-
-	/**
-	 * @param string $userId
 	 * @param string $miroUserId
 	 * @return array
 	 * @throws Exception

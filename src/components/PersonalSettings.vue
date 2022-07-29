@@ -31,19 +31,6 @@
 					{{ t('integration_miro', 'Disconnect from Miro') }}
 				</Button>
 			</div>
-			<br>
-			<div v-if="connected" id="miro-search-block">
-				<CheckboxRadioSwitch
-					:checked.sync="state.search_boards_enabled"
-					@update:checked="onSearchChange">
-					{{ t('integration_miro', 'Enable searching for boards') }}
-				</CheckboxRadioSwitch>
-				<br>
-				<p v-if="state.search_boards_enabled" class="settings-hint">
-					<InformationVariantIcon :size="24" class="icon" />
-					{{ t('integration_miro', 'Warning, everything you type in the search bar will be sent to Miro.') }}
-				</p>
-			</div>
 		</div>
 	</div>
 </template>
@@ -52,14 +39,12 @@
 import CheckIcon from 'vue-material-design-icons/Check'
 import OpenInNewIcon from 'vue-material-design-icons/OpenInNew'
 import CloseIcon from 'vue-material-design-icons/Close'
-import InformationVariantIcon from 'vue-material-design-icons/InformationVariant'
 import Button from '@nextcloud/vue/dist/Components/Button'
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 import { oauthConnect } from '../utils'
 import { showSuccess, showError } from '@nextcloud/dialogs'
-import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 import MiroIcon from './icons/MiroIcon'
 
 export default {
@@ -67,11 +52,9 @@ export default {
 
 	components: {
 		MiroIcon,
-		CheckboxRadioSwitch,
 		Button,
 		OpenInNewIcon,
 		CloseIcon,
-		InformationVariantIcon,
 		CheckIcon,
 	},
 
@@ -116,9 +99,6 @@ export default {
 		onLogoutClick() {
 			this.state.token = ''
 			this.saveOptions({ token: '' })
-		},
-		onSearchChange(newValue) {
-			this.saveOptions({ search_boards_enabled: newValue ? '1' : '0' })
 		},
 		saveOptions(values) {
 			const req = {
@@ -175,6 +155,7 @@ export default {
 	.field {
 		display: flex;
 		align-items: center;
+		margin-left: 30px;
 
 		input,
 		label {
@@ -189,11 +170,6 @@ export default {
 		.icon {
 			margin-right: 8px;
 		}
-	}
-
-	.field,
-	#miro-search-block {
-		margin-left: 30px;
 	}
 
 	.settings-hint {

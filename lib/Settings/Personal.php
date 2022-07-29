@@ -43,7 +43,6 @@ class Personal implements ISettings {
 	 */
 	public function getForm(): TemplateResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
-		$searchBoardsEnabled = $this->config->getUserValue($this->userId, Application::APP_ID, 'search_boards_enabled', '0');
 		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
 		$miroUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
 
@@ -60,7 +59,6 @@ class Personal implements ISettings {
 			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,
-			'search_boards_enabled' => ($searchBoardsEnabled === '1'),
 		];
 		$this->initialStateService->provideInitialState('user-config', $userConfig);
 		return new TemplateResponse(Application::APP_ID, 'personalSettings');
