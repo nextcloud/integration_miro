@@ -4,7 +4,7 @@
 			{{ t('integration_miro', 'Create a board') }}
 		</h2>
 		<div class="fields">
-			<div v-for="(field, fieldId) in fields"
+			<div v-for="(field, fieldId) in creationFields"
 				:key="fieldId"
 				class="field">
 				<div v-if="!['ncSwitch', 'ncCheckbox'].includes(field.type)"
@@ -233,6 +233,14 @@ export default {
 	},
 
 	computed: {
+		creationFields() {
+			return Object.fromEntries(
+				Object.entries(this.fields)
+					.filter(([fieldId, field]) => {
+						return !field.readonly
+					})
+			)
+		},
 	},
 
 	watch: {
@@ -240,8 +248,8 @@ export default {
 
 	beforeMount() {
 		const boardWithDefaults = {}
-		Object.keys(fields).forEach((fieldId) => {
-			boardWithDefaults[fieldId] = fields[fieldId].default
+		Object.keys(this.creationFields).forEach((fieldId) => {
+			boardWithDefaults[fieldId] = this.creationFields[fieldId].default
 		})
 		this.newBoard = {
 			...boardWithDefaults,
@@ -250,11 +258,11 @@ export default {
 
 	mounted() {
 		if (this.focusOnField) {
-			const fields = this.$refs['board-' + this.focusOnField]
-			if (fields && fields.length > 0) {
+			const field = this.$refs['board-' + this.focusOnField]
+			if (field && field.length > 0) {
 				this.$nextTick(() => {
-					fields[0].focus()
-					fields[0].select()
+					field[0].focus()
+					field[0].select()
 				})
 			}
 		}
@@ -263,8 +271,8 @@ export default {
 	methods: {
 		onOkClick() {
 			let isFormValid = true
-			Object.keys(this.fields).forEach((fieldId) => {
-				const field = this.fields[fieldId]
+			Object.keys(this.creationFields).forEach((fieldId) => {
+				const field = this.creationFields[fieldId]
 				const fieldValue = this.newBoard[fieldId]
 				// a field with false as value is accepted
 				if (field.mandatory && !fieldValue && fieldValue !== false) {

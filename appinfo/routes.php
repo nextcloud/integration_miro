@@ -20,8 +20,8 @@ return [
 		['name' => 'config#popupSuccessPage', 'url' => '/popup-success', 'verb' => 'GET'],
 
 		['name' => 'miroAPI#getBoards', 'url' => '/boards', 'verb' => 'GET'],
-		['name' => 'miroAPI#createBoard', 'url' => '/board', 'verb' => 'POST'],
-		['name' => 'miroAPI#deleteBoard', 'url' => '/board/{id}', 'verb' => 'DELETE'],
+		['name' => 'miroAPI#createBoard', 'url' => '/boards', 'verb' => 'POST'],
+		['name' => 'miroAPI#deleteBoard', 'url' => '/boards/{id}', 'verb' => 'DELETE'],
         ['name' => 'miroAPI#getUserAvatar', 'url' => '/users/{userId}/image', 'verb' => 'GET'],
         ['name' => 'miroAPI#getTeamAvatar', 'url' => '/teams/{teamId}/image', 'verb' => 'GET'],
     ]

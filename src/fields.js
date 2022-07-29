@@ -1,14 +1,15 @@
-// import ClockOutlineIcon from 'vue-material-design-icons/ClockOutline'
+import ClockOutlineIcon from 'vue-material-design-icons/ClockOutline'
 // import ShareVariantIcon from 'vue-material-design-icons/ShareVariant'
 // import HomeGroupIcon from 'vue-material-design-icons/HomeGroup'
 // import AccountGroupIcon from 'vue-material-design-icons/AccountGroup'
 // import AccountGroupOutlineIcon from 'vue-material-design-icons/AccountGroupOutline'
 import TextIcon from 'vue-material-design-icons/Text'
+import AccountIcon from 'vue-material-design-icons/Account'
 // import LockIcon from 'vue-material-design-icons/Lock'
 // import PaletteIcon from 'vue-material-design-icons/Palette'
 // import PaletteSwatchIcon from 'vue-material-design-icons/PaletteSwatch'
 // import PaletteSwatchOutlineIcon from 'vue-material-design-icons/PaletteSwatchOutline'
-// import TextLongIcon from 'vue-material-design-icons/TextLong'
+import TextLongIcon from 'vue-material-design-icons/TextLong'
 // import CalendarMonthIcon from 'vue-material-design-icons/CalendarMonth'
 // import FormatListBulletedTypeIcon from 'vue-material-design-icons/FormatListBulletedType'
 
@@ -20,6 +21,25 @@ export const fields = {
 		placeholder: t('integration_miro', 'board name'),
 		default: t('integration_miro', 'New board'),
 		mandatory: true,
+	},
+	description: {
+		icon: TextLongIcon,
+		label: t('integration_miro', 'Description'),
+		type: 'textarea',
+		placeholder: t('integration_miro', 'Board description'),
+		default: '',
+	},
+	createdByName: {
+		icon: AccountIcon,
+		label: t('integration_miro', 'Created by'),
+		type: 'text',
+		readonly: true,
+	},
+	createdAt: {
+		icon: ClockOutlineIcon,
+		label: t('integration_miro', 'Created at'),
+		type: 'ncDatetime',
+		readonly: true,
 	},
 	/*
 	password: {

@@ -81,6 +81,8 @@ class PageController extends Controller {
 
 		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
 		$miroUserName = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_name');
+		$miroTeamId = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_id');
+		$miroTeamName = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_name');
 
 		$talkEnabled = $this->appManager->isEnabledForUser('spreed', $this->userId);
 
@@ -91,6 +93,8 @@ class PageController extends Controller {
 			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,
+			'team_id' => $miroTeamId,
+			'team_name' => $miroTeamName,
 			'talk_enabled' => $talkEnabled,
 			'board_list' => [],
 		];

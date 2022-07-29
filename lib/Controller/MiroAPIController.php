@@ -109,12 +109,41 @@ class MiroAPIController extends Controller {
 	/**
 	 * @return DataResponse
 	 */
-	public function getBoards() {
+	public function getBoards(): DataResponse {
 		$result = $this->miroAPIService->getMyBoards($this->userId);
 		if (isset($result['error'])) {
 			return new DataResponse($result, Http::STATUS_BAD_REQUEST);
 		} else {
 			return new DataResponse($result);
 		}
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $description
+	 * @param string $teamId
+	 * @return DataResponse
+	 * @throws \Exception
+	 */
+	public function createBoard(string $name, string $description, string $teamId): DataResponse {
+		$result = $this->miroAPIService->createBoard($this->userId, $name, $description, $teamId);
+		if (isset($result['error'])) {
+			return new DataResponse($result, Http::STATUS_BAD_REQUEST);
+		} else {
+			return new DataResponse($result);
+		}
+	}
+
+	/**
+	 * @param string $id
+	 * @return DataResponse
+	 * @throws \Exception
+	 */
+	public function deleteBoard(string $id): DataResponse {
+		$result = $this->miroAPIService->deleteBoard($this->userId, $id);
+		if ($result === null) {
+			return new DataResponse($result);
+		}
+		return new DataResponse($result, Http::STATUS_BAD_REQUEST);
 	}
 }

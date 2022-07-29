@@ -153,7 +153,9 @@ class MiroAPIService {
 	 * @throws Exception
 	 */
 	public function getMyBoards(string $userId): array {
+		$teamId = $this->config->getUserValue($userId, Application::APP_ID, 'team_id');
 		$params = [
+			'team_id' => $teamId,
 			'limit' => 50,
 			'sort' => 'last_modified',
 		];
@@ -161,7 +163,55 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		return $result['data'] ?? [];
+		return array_map(static function(array $board) {
+			$board['createdByName'] = $board['createdBy']['name'] ?? '??';
+			$board['trash'] = false;
+			return $board;
+		}, $result['data'] ?? []);
+	}
+
+	/**
+	 * @param string $userId
+	 * @param string $name
+	 * @param string $description
+	 * @param string $teamId
+	 * @return array|string[]
+	 * @throws Exception
+	 */
+	public function createBoard(string $userId, string $name, string $description, string $teamId): array {
+		$params = [
+			'name' => $name,
+			'description' => $description,
+			'teamId' => $teamId,
+			'permissionPolicy' => [
+				'collaborationToolsStartAccess' => 'all_editors',
+				'copyAccess' => 'anyone',
+				'sharingAccess' => 'team_members_with_editing_rights',
+			],
+			'sharingPolicy' => [
+				'access' => 'edit',
+				'inviteToAccountAndBoardLinkAccess' => 'editor',
+				'organizationAccess' => 'edit',
+				'teamAccess' => 'edit',
+			],
+		];
+		$result = $this->request($userId, 'v2/boards', $params, 'POST');
+		if (isset($result['error'])) {
+			return $result;
+		}
+		$result['createdByName'] = $result['createdBy']['name'] ?? '??';
+		$result['trash'] = false;
+		return $result;
+	}
+
+	/**
+	 * @param string $userId
+	 * @param string $boardId
+	 * @return array|string[]
+	 * @throws Exception
+	 */
+	public function deleteBoard(string $userId, string $boardId): ?array {
+		return $this->request($userId, 'v2/boards/' . $boardId, [], 'DELETE');
 	}
 
 	/**
@@ -182,7 +232,6 @@ class MiroAPIService {
 			$options = [
 				'headers' => [
 					'Authorization'  => 'Bearer ' . $accessToken,
-//					'Content-Type' => 'application/x-www-form-urlencoded',
 					'Accept' => 'application/json',
 					'User-Agent'  => Application::INTEGRATION_USER_AGENT,
 				],

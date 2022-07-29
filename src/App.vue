@@ -198,14 +198,16 @@ export default {
 			board.trash = false
 			const req = {
 				name: board.name,
-				password: board.password,
+				description: board.description,
+				teamId: this.state.team_id,
 			}
-			const url = generateUrl('/apps/integration_miro/board')
+			const url = generateUrl('/apps/integration_miro/boards')
 			axios.post(url, req).then((response) => {
 				showSuccess(t('integration_miro', 'New board was created in Miro'))
 				board.id = response.data?.id
-				this.state.board_list.push(board)
-				this.selectedBoardId = board.id
+				const responseBoard = response.data
+				this.state.board_list.push(responseBoard)
+				this.selectedBoardId = responseBoard.id
 				this.creationModalOpen = false
 			}).catch((error) => {
 				showError(
@@ -223,7 +225,7 @@ export default {
 		},
 		deleteBoard(boardId) {
 			console.debug('DELETE board', boardId)
-			const url = generateUrl('/apps/integration_miro/board/{boardId}', { boardId })
+			const url = generateUrl('/apps/integration_miro/boards/{boardId}', { boardId })
 			axios.delete(url).then((response) => {
 			}).catch((error) => {
 				showError(
