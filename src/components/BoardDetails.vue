@@ -6,7 +6,7 @@
 			</h2>
 			<div class="links">
 				<div class="buttons">
-					<!--div class="modal-button-wrapper">
+					<div class="modal-button-wrapper">
 						<Button @click="showMiroModal = true">
 							<template #icon>
 								<DockWindowIcon :size="20" />
@@ -14,10 +14,10 @@
 							{{ t('integration_miro', 'Open here') }}
 						</Button>
 						<MiroModal v-if="showMiroModal"
-							:board-url="publicLink"
+							:board-url="boardEmbedLink"
 							@close="showMiroModal = false" />
-					</div-->
-					<a :href="publicLink" target="_blank">
+					</div>
+					<a :href="boardLink" target="_blank">
 						<Button>
 							<template #icon>
 								<OpenInNewIcon :size="20" />
@@ -42,15 +42,15 @@
 					<div class="leftPart">
 						<LinkVariantIcon :size="20" />
 						<label>
-							{{ t('integration_miro', 'Public board link') }}
+							{{ t('integration_miro', 'Board link') }}
 						</label>
 					</div>
 					<div class="rightPart linkInputWrapper">
-						<input type="text" :readonly="true" :value="publicLink">
-						<a :href="publicLink" @click.prevent.stop="copyLink(false)">
+						<input type="text" :readonly="true" :value="boardLink">
+						<a :href="boardLink" @click.prevent.stop="copyLink(false)">
 							<Button v-tooltip.bottom="{ content: t('integration_miro', 'Copy to clipboard') }">
 								<template #icon>
-									<CheckIcon v-if="publicLinkCopied"
+									<CheckIcon v-if="boardLinkCopied"
 										class="copiedIcon"
 										:size="16" />
 									<ClippyIcon v-else
@@ -184,13 +184,13 @@ import ClippyIcon from './icons/ClippyIcon'
 import Button from '@nextcloud/vue/dist/Components/Button'
 import { showSuccess, showError } from '@nextcloud/dialogs'
 import SendModal from './talk/SendModal'
-// import MiroModal from './MiroModal'
+import MiroModal from './MiroModal'
 
 export default {
 	name: 'BoardDetails',
 
 	components: {
-		// MiroModal,
+		MiroModal,
 		Button,
 		SendModal,
 		ClippyIcon,
@@ -222,14 +222,18 @@ export default {
 	data() {
 		return {
 			fields,
-			publicLinkCopied: false,
+			boardLinkCopied: false,
 			showTalkModal: false,
 			showMiroModal: false,
 		}
 	},
 
 	computed: {
-		publicLink() {
+		boardEmbedLink() {
+			// return 'https://miro.com/app/live-embed/' + this.board.id + '/?moveToViewport=-1076,-525,2150,1049&embedId=338619368755'
+			return 'https://miro.com/app/live-embed/' + this.board.id + '/'
+		},
+		boardLink() {
 			return this.board.viewLink
 		},
 		fieldsToDisplay() {
@@ -253,14 +257,14 @@ export default {
 
 	methods: {
 		async copyLink() {
-			const link = this.publicLink
+			const link = this.boardLink
 			try {
 				await this.$copyText(link)
-				this.publicLinkCopied = true
-				showSuccess(t('integration_miro', 'Public link copied!'))
+				this.boardLinkCopied = true
+				showSuccess(t('integration_miro', 'Board link copied!'))
 				// eslint-disable-next-line
 				new Timer(() => {
-					this.publicLinkCopied = false
+					this.boardLinkCopied = false
 				}, 5000)
 			} catch (error) {
 				console.error(error)

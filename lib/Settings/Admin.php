@@ -31,12 +31,14 @@ class Admin implements ISettings {
 	public function getForm(): TemplateResponse {
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
 		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
-		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0');
+		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
+		$overrideLinkClick = $this->config->getAppValue(Application::APP_ID, 'override_link_click', '0') === '1';
 
 		$adminConfig = [
 			'client_id' => $clientID,
 			'client_secret' => $clientSecret,
-			'use_popup' => ($usePopup === '1'),
+			'use_popup' => $usePopup,
+			'override_link_click' => $overrideLinkClick,
 		];
 		$this->initialStateService->provideInitialState('admin-config', $adminConfig);
 		return new TemplateResponse(Application::APP_ID, 'adminSettings');

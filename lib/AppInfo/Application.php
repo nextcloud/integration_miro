@@ -9,13 +9,16 @@
 
 namespace OCA\Miro\AppInfo;
 
-use OCP\IConfig;
+use OCA\Miro\Listener\AddContentSecurityPolicyListener;
 
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 
+use OCP\AppFramework\Services\IInitialState;
+use OCP\IConfig;
+use OCP\Security\CSP\AddContentSecurityPolicyEvent;
 use OCP\Util;
 
 /**
@@ -28,10 +31,8 @@ class Application extends App implements IBootstrap {
 
 	public const INTEGRATION_USER_AGENT = 'Nextcloud Miro integration';
 	public const MIRO_API_BASE_URL = 'https://api.miro.com';
-	/**
-	 * @var IConfig
-	 */
-	private $config;
+	public const MIRO_DOMAIN = 'https://miro.com';
+	public const MIRO_SUBDOMAINS = 'https://*.miro.com';
 
 	/**
 	 * Constructor
@@ -40,17 +41,24 @@ class Application extends App implements IBootstrap {
 	 */
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
-
-		$container = $this->getContainer();
-		/** @var IConfig config */
-		$this->config = $container->get(IConfig::class);
 	}
 
 	public function register(IRegistrationContext $context): void {
+		$context->registerEventListener(AddContentSecurityPolicyEvent::class, AddContentSecurityPolicyListener::class);
 	}
 
 	public function boot(IBootContext $context): void {
-//		Util::addStyle(self::APP_ID, 'miro-search');
+		$context->injectFn(function (
+			IInitialState $initialState,
+			IConfig $config,
+			?string $userId
+		) {
+			$overrideClick = $config->getAppValue(Application::APP_ID, 'override_link_click', '0') === '1';
+
+			// TODO why not making it use-specific?
+			$initialState->provideInitialState('override_link_click', $overrideClick);
+			Util::addScript(self::APP_ID, self::APP_ID . '-standalone');
+		});
 	}
 }
 

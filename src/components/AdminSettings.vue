@@ -54,6 +54,12 @@
 			@update:checked="onUsePopupChanged">
 			{{ t('integration_miro', 'Use a popup to authenticate') }}
 		</CheckboxRadioSwitch>
+		<CheckboxRadioSwitch
+			class="field"
+			:checked.sync="state.override_link_click"
+			@update:checked="onOverrideChanged">
+			{{ t('integration_miro', 'Open Miro board links in Nextcloud') }}
+		</CheckboxRadioSwitch>
 	</div>
 </template>
 
@@ -98,6 +104,9 @@ export default {
 	methods: {
 		onUsePopupChanged(newValue) {
 			this.saveOptions({ use_popup: newValue ? '1' : '0' })
+		},
+		onOverrideChanged(newValue) {
+			this.saveOptions({ override_link_click: newValue ? '1' : '0' })
 		},
 		onInput() {
 			delay(() => {
