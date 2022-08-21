@@ -34,6 +34,9 @@ function listen() {
 				: null
 		if (link !== null) {
 			const href = link.getAttribute('href')
+			if (!href) {
+				return
+			}
 			if (href.startsWith('https://miro.com/app/board/')) {
 				e.preventDefault()
 				e.stopPropagation()
