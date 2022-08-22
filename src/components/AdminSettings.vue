@@ -64,15 +64,17 @@
 </template>
 
 <script>
+import InformationVariantIcon from 'vue-material-design-icons/InformationVariant.vue'
+import KeyIcon from 'vue-material-design-icons/Key.vue'
+
+import MiroIcon from './icons/MiroIcon.vue'
+
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import { delay } from '../utils'
+import { delay } from '../utils.js'
 import { showSuccess, showError } from '@nextcloud/dialogs'
-import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
-import MiroIcon from './icons/MiroIcon'
-import InformationVariantIcon from 'vue-material-design-icons/InformationVariant'
-import KeyIcon from 'vue-material-design-icons/Key'
+import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch.js'
 
 export default {
 	name: 'AdminSettings',

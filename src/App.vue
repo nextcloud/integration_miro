@@ -1,5 +1,5 @@
 <template>
-	<Content app-name="integration_miro">
+	<NcContent app-name="integration_miro">
 		<MiroNavigation
 			:boards="activeBoards"
 			:selected-board-id="selectedBoardId"
@@ -27,14 +27,14 @@
 						<span>
 							{{ t('integration_miro', 'You are not connected to Miro') }}
 						</span>
-						<Button
+						<NcButton
 							class="oauthButton"
 							@click="connectWithOauth">
 							<template #icon>
 								<OpenInNewIcon />
 							</template>
 							{{ t('integration_miro', 'Connect to Miro') }}
-						</Button>
+						</NcButton>
 					</span>
 				</EmptyContent>
 			</div>
@@ -46,14 +46,14 @@
 					<span>
 						{{ t('integration_miro', 'You haven\'t created any boards yet') }}
 					</span>
-					<Button
+					<NcButton
 						class="createButton"
 						@click="onCreateBoardClick">
 						<template #icon>
 							<PlusIcon />
 						</template>
 						{{ t('integration_miro', 'Create a board') }}
-					</Button>
+					</NcButton>
 				</span>
 			</EmptyContent>
 			<EmptyContent v-else>
@@ -72,29 +72,29 @@
 				@ok-clicked="onCreationValidate"
 				@cancel-clicked="closeCreationModal" />
 		</Modal>
-	</Content>
+	</NcContent>
 </template>
 
 <script>
-import OpenInNewIcon from 'vue-material-design-icons/OpenInNew'
-import CogIcon from 'vue-material-design-icons/Cog'
-import PlusIcon from 'vue-material-design-icons/Plus'
-import Button from '@nextcloud/vue/dist/Components/Button'
-import AppContent from '@nextcloud/vue/dist/Components/AppContent'
-import Content from '@nextcloud/vue/dist/Components/Content'
-import Modal from '@nextcloud/vue/dist/Components/Modal'
-import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
+import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue'
+import CogIcon from 'vue-material-design-icons/Cog.vue'
+import PlusIcon from 'vue-material-design-icons/Plus.vue'
+import NcButton from '@nextcloud/vue/dist/Components/Button.js'
+import AppContent from '@nextcloud/vue/dist/Components/AppContent.js'
+import NcContent from '@nextcloud/vue/dist/Components/Content.js'
+import Modal from '@nextcloud/vue/dist/Components/Modal.js'
+import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent.js'
 
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
 import axios from '@nextcloud/axios'
 import { showSuccess, showError, showUndo } from '@nextcloud/dialogs'
 
-import MiroNavigation from './components/MiroNavigation'
-import CreationForm from './components/CreationForm'
-import BoardDetails from './components/BoardDetails'
-import MiroIcon from './components/icons/MiroIcon'
-import { oauthConnect, Timer } from './utils'
+import MiroNavigation from './components/MiroNavigation.vue'
+import CreationForm from './components/CreationForm.vue'
+import BoardDetails from './components/BoardDetails.vue'
+import MiroIcon from './components/icons/MiroIcon.vue'
+import { oauthConnect, Timer } from './utils.js'
 
 export default {
 	name: 'App',
@@ -108,10 +108,10 @@ export default {
 		PlusIcon,
 		OpenInNewIcon,
 		AppContent,
-		Content,
+		NcContent,
 		Modal,
 		EmptyContent,
-		Button,
+		NcButton,
 	},
 
 	props: {

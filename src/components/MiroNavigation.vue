@@ -23,10 +23,10 @@
 </template>
 
 <script>
-// import PlusIcon from 'vue-material-design-icons/Plus'
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation'
-import BoardNavigationItem from './BoardNavigationItem'
+// import PlusIcon from 'vue-material-design-icons/Plus.vue'
+import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew.js'
+import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation.js'
+import BoardNavigationItem from './BoardNavigationItem.vue'
 
 export default {
 	name: 'MiroNavigation',

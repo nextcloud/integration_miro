@@ -8,7 +8,7 @@
 			{{ t('integration_miro', 'Ask your administrator to configure the Miro integration in Nextcloud.') }}
 		</p>
 		<div id="miro-content">
-			<Button v-if="!connected && showOAuth"
+			<NcButton v-if="!connected && showOAuth"
 				id="miro-connect"
 				class="field"
 				:disabled="loading === true"
@@ -18,41 +18,41 @@
 					<OpenInNewIcon />
 				</template>
 				{{ t('integration_miro', 'Connect to Miro') }}
-			</Button>
+			</NcButton>
 			<div v-if="connected" class="field">
 				<label class="miro-connected">
 					<CheckIcon :size="24" class="icon" />
 					{{ t('integration_miro', 'Connected as {user}', { user: connectedDisplayName }) }}
 				</label>
-				<Button id="miro-rm-cred" @click="onLogoutClick">
+				<NcButton id="miro-rm-cred" @click="onLogoutClick">
 					<template #icon>
 						<CloseIcon />
 					</template>
 					{{ t('integration_miro', 'Disconnect from Miro') }}
-				</Button>
+				</NcButton>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import CheckIcon from 'vue-material-design-icons/Check'
-import OpenInNewIcon from 'vue-material-design-icons/OpenInNew'
-import CloseIcon from 'vue-material-design-icons/Close'
-import Button from '@nextcloud/vue/dist/Components/Button'
+import CheckIcon from 'vue-material-design-icons/Check.vue'
+import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue'
+import CloseIcon from 'vue-material-design-icons/Close.vue'
+import NcButton from '@nextcloud/vue/dist/Components/Button.js'
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import { oauthConnect } from '../utils'
+import { oauthConnect } from '../utils.js'
 import { showSuccess, showError } from '@nextcloud/dialogs'
-import MiroIcon from './icons/MiroIcon'
+import MiroIcon from './icons/MiroIcon.vue'
 
 export default {
 	name: 'PersonalSettings',
 
 	components: {
 		MiroIcon,
-		Button,
+		NcButton,
 		OpenInNewIcon,
 		CloseIcon,
 		CheckIcon,

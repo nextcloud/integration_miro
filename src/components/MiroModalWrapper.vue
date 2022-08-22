@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import MiroModal from './MiroModal'
+import MiroModal from './MiroModal.vue'
 
 export default {
 	name: 'MiroModalWrapper',

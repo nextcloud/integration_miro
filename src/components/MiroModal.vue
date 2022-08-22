@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Modal from '@nextcloud/vue/dist/Components/Modal'
+import Modal from '@nextcloud/vue/dist/Components/Modal.js'
 
 export default {
 	name: 'MiroModal',
