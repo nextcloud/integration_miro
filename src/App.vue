@@ -28,7 +28,7 @@
 						<span class="emptyContentWrapper">
 							<NcButton
 								class="oauthButton"
-								@click="connectWithOauth">
+								@click="onConnectClick">
 								<template #icon>
 									<OpenInNewIcon />
 								</template>
@@ -132,6 +132,9 @@ export default {
 		connected() {
 			return !!this.state.user_name && !!this.state.token
 		},
+		isOauthPossible() {
+			return !!this.state.client_id && !!this.state.client_secret
+		},
 		activeBoards() {
 			return this.state.board_list.filter((b) => !b.trash)
 		},
@@ -162,6 +165,13 @@ export default {
 	},
 
 	methods: {
+		onConnectClick() {
+			if (this.isOauthPossible) {
+				this.connectWithOauth()
+			} else {
+				window.location.replace(this.configureUrl)
+			}
+		},
 		connectWithOauth() {
 			if (this.state.use_popup) {
 				oauthConnect(this.state.client_id, null, true)

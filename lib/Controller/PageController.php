@@ -71,6 +71,7 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @return TemplateResponse
+	 * @throws \Exception
 	 */
 	public function index(): TemplateResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
