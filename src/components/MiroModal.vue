@@ -1,6 +1,7 @@
 <template>
 	<NcModal
 		size="full"
+		:close-button-contained="false"
 		@close="$emit('close')">
 		<iframe
 			class="frame"
