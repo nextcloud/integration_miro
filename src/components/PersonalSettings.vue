@@ -39,7 +39,9 @@
 import CheckIcon from 'vue-material-design-icons/Check.vue'
 import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue'
 import CloseIcon from 'vue-material-design-icons/Close.vue'
-import NcButton from '@nextcloud/vue/dist/Components/Button.js'
+
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'

@@ -1,15 +1,13 @@
 <template>
-	<AppNavigation>
+	<NcAppNavigation>
 		<template #list>
-			<AppNavigationNew v-if="isConfigured"
+			<NcAppNavigationNew v-if="isConfigured"
 				:text="t('integration_miro', 'Create a board')"
-				button-class="icon-add"
 				@click="onCreateBoardClick">
-				<!-- will be possible with @nc/vue v5.3.2 -->
-				<!--template #icon>
+				<template #icon>
 					<PlusIcon />
-				</template-->
-			</AppNavigationNew>
+				</template>
+			</NcAppNavigationNew>
 			<BoardNavigationItem v-for="board in boards"
 				:key="board.id"
 				class="boardItem"
@@ -19,13 +17,13 @@
 				@delete-board="onBoardDeleted" />
 		</template>
 		<!--template #footer></template-->
-	</AppNavigation>
+	</NcAppNavigation>
 </template>
 
 <script>
-// import PlusIcon from 'vue-material-design-icons/Plus.vue'
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew.js'
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation.js'
+import PlusIcon from 'vue-material-design-icons/Plus.vue'
+import NcAppNavigationNew from '@nextcloud/vue/dist/Components/NcAppNavigationNew.js'
+import NcAppNavigation from '@nextcloud/vue/dist/Components/NcAppNavigation.js'
 import BoardNavigationItem from './BoardNavigationItem.vue'
 
 export default {
@@ -33,9 +31,9 @@ export default {
 
 	components: {
 		BoardNavigationItem,
-		AppNavigationNew,
-		AppNavigation,
-		// PlusIcon,
+		NcAppNavigationNew,
+		NcAppNavigation,
+		PlusIcon,
 	},
 
 	props: {

@@ -7,7 +7,7 @@
 			@create-board-clicked="onCreateBoardClick"
 			@board-clicked="onBoardClicked"
 			@delete-board="onBoardDeleted" />
-		<AppContent
+		<NcAppContent
 			:list-max-width="50"
 			:list-min-width="20"
 			:list-size="20"
@@ -19,51 +19,51 @@
 				:board="selectedBoard"
 				:talk-enabled="state.talk_enabled" />
 			<div v-else-if="!connected">
-				<EmptyContent>
+				<NcEmptyContent
+					:title="t('integration_miro', 'You are not connected to Miro')">
 					<template #icon>
 						<CogIcon />
 					</template>
-					<span class="emptyContentWrapper">
-						<span>
-							{{ t('integration_miro', 'You are not connected to Miro') }}
+					<template #action>
+						<span class="emptyContentWrapper">
+							<NcButton
+								class="oauthButton"
+								@click="connectWithOauth">
+								<template #icon>
+									<OpenInNewIcon />
+								</template>
+								{{ t('integration_miro', 'Connect to Miro') }}
+							</NcButton>
 						</span>
+					</template>
+				</NcEmptyContent>
+			</div>
+			<NcEmptyContent v-else-if="activeBoardCount === 0"
+				:title="t('integration_miro', 'You haven\'t created any boards yet')">
+				<template #icon>
+					<MiroIcon />
+				</template>
+				<template #action>
+					<span class="emptyContentWrapper">
 						<NcButton
-							class="oauthButton"
-							@click="connectWithOauth">
+							class="createButton"
+							@click="onCreateBoardClick">
 							<template #icon>
-								<OpenInNewIcon />
+								<PlusIcon />
 							</template>
-							{{ t('integration_miro', 'Connect to Miro') }}
+							{{ t('integration_miro', 'Create a board') }}
 						</NcButton>
 					</span>
-				</EmptyContent>
-			</div>
-			<EmptyContent v-else-if="activeBoardCount === 0">
+				</template>
+			</NcEmptyContent>
+			<NcEmptyContent v-else
+				:title="t('integration_miro', 'Select a board')">
 				<template #icon>
 					<MiroIcon />
 				</template>
-				<span class="emptyContentWrapper">
-					<span>
-						{{ t('integration_miro', 'You haven\'t created any boards yet') }}
-					</span>
-					<NcButton
-						class="createButton"
-						@click="onCreateBoardClick">
-						<template #icon>
-							<PlusIcon />
-						</template>
-						{{ t('integration_miro', 'Create a board') }}
-					</NcButton>
-				</span>
-			</EmptyContent>
-			<EmptyContent v-else>
-				<template #icon>
-					<MiroIcon />
-				</template>
-				{{ t('integration_miro', 'No selected board') }}
-			</EmptyContent>
-		</AppContent>
-		<Modal v-if="creationModalOpen"
+			</NcEmptyContent>
+		</NcAppContent>
+		<NcModal v-if="creationModalOpen"
 			size="small"
 			@close="closeCreationModal">
 			<CreationForm
@@ -71,7 +71,7 @@
 				focus-on-field="name"
 				@ok-clicked="onCreationValidate"
 				@cancel-clicked="closeCreationModal" />
-		</Modal>
+		</NcModal>
 	</NcContent>
 </template>
 
@@ -79,11 +79,12 @@
 import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue'
 import CogIcon from 'vue-material-design-icons/Cog.vue'
 import PlusIcon from 'vue-material-design-icons/Plus.vue'
-import NcButton from '@nextcloud/vue/dist/Components/Button.js'
-import AppContent from '@nextcloud/vue/dist/Components/AppContent.js'
-import NcContent from '@nextcloud/vue/dist/Components/Content.js'
-import Modal from '@nextcloud/vue/dist/Components/Modal.js'
-import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent.js'
+
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
+import NcContent from '@nextcloud/vue/dist/Components/NcContent.js'
+import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
+import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
 
 import { generateUrl } from '@nextcloud/router'
 import { loadState } from '@nextcloud/initial-state'
@@ -107,10 +108,10 @@ export default {
 		CogIcon,
 		PlusIcon,
 		OpenInNewIcon,
-		AppContent,
+		NcAppContent,
 		NcContent,
-		Modal,
-		EmptyContent,
+		NcModal,
+		NcEmptyContent,
 		NcButton,
 	},
 

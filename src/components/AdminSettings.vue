@@ -48,18 +48,18 @@
 				@focus="readonly = false"
 				@input="onInput">
 		</div>
-		<CheckboxRadioSwitch
+		<NcCheckboxRadioSwitch
 			class="field"
 			:checked.sync="state.use_popup"
 			@update:checked="onUsePopupChanged">
 			{{ t('integration_miro', 'Use a popup to authenticate') }}
-		</CheckboxRadioSwitch>
-		<CheckboxRadioSwitch
+		</NcCheckboxRadioSwitch>
+		<NcCheckboxRadioSwitch
 			class="field"
 			:checked.sync="state.override_link_click"
 			@update:checked="onOverrideChanged">
 			{{ t('integration_miro', 'Open Miro board links in Nextcloud') }}
-		</CheckboxRadioSwitch>
+		</NcCheckboxRadioSwitch>
 	</div>
 </template>
 
@@ -69,19 +69,20 @@ import KeyIcon from 'vue-material-design-icons/Key.vue'
 
 import MiroIcon from './icons/MiroIcon.vue'
 
+import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
+
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 import { delay } from '../utils.js'
 import { showSuccess, showError } from '@nextcloud/dialogs'
-import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch.js'
 
 export default {
 	name: 'AdminSettings',
 
 	components: {
 		MiroIcon,
-		CheckboxRadioSwitch,
+		NcCheckboxRadioSwitch,
 		InformationVariantIcon,
 		KeyIcon,
 	},

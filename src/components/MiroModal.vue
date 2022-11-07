@@ -1,5 +1,5 @@
 <template>
-	<Modal
+	<NcModal
 		size="full"
 		@close="$emit('close')">
 		<iframe
@@ -8,17 +8,17 @@
 			scrolling="no"
 			:allowFullScreen="true"
 			:src="boardUrl" />
-	</Modal>
+	</NcModal>
 </template>
 
 <script>
-import Modal from '@nextcloud/vue/dist/Components/Modal.js'
+import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
 
 export default {
 	name: 'MiroModal',
 
 	components: {
-		Modal,
+		NcModal,
 	},
 
 	props: {
