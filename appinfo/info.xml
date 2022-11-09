@@ -9,15 +9,15 @@
 	<author>Julien Veyssier</author>
 	<namespace>Miro</namespace>
 	<documentation>
-		<developer>https://github.com/eneiluj/integration_miro</developer>
+		<developer>https://github.com/julien-nc/integration_miro</developer>
 	</documentation>
 	<category>integration</category>
 	<category>dashboard</category>
-	<website>https://github.com/eneiluj/integration_miro</website>
-	<bugs>https://github.com/eneiluj/integration_miro/issues</bugs>
-	<screenshot>https://github.com/eneiluj/integration_miro/raw/master/img/screenshot1.jpg</screenshot>
-	<screenshot>https://github.com/eneiluj/integration_miro/raw/master/img/screenshot2.jpg</screenshot>
-	<screenshot>https://github.com/eneiluj/integration_miro/raw/master/img/screenshot3.jpg</screenshot>
+	<website>https://github.com/julien-nc/integration_miro</website>
+	<bugs>https://github.com/julien-nc/integration_miro/issues</bugs>
+	<screenshot>https://github.com/julien-nc/integration_miro/raw/master/img/screenshot1.jpg</screenshot>
+	<screenshot>https://github.com/julien-nc/integration_miro/raw/master/img/screenshot2.jpg</screenshot>
+	<screenshot>https://github.com/julien-nc/integration_miro/raw/master/img/screenshot3.jpg</screenshot>
 	<dependencies>
 		<nextcloud min-version="25" max-version="26"/>
 	</dependencies>
