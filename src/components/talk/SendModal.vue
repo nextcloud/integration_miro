@@ -1,6 +1,6 @@
 <template>
 	<NcModal
-		class="send-modal"
+		class="miro-send-modal"
 		size="small"
 		@close="$emit('close')">
 		<div class="modal-content">
@@ -382,6 +382,7 @@ export default {
 	min-height: 90%;
 	display: flex !important;
 	flex-direction: column;
+	overflow-y: auto;
 }
 
 .modal-content {
@@ -391,6 +392,7 @@ export default {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	overflow-y: auto;
 
 	h2 {
 		text-align: center;
@@ -399,6 +401,18 @@ export default {
 	h3 {
 		font-weight: bold;
 		color: var(--color-primary-element);
+	}
+
+	.results {
+		overflow-y: scroll;
+		scrollbar-width: auto;
+		scrollbar-color: var(--color-primary);
+
+		#conversations,
+		#users,
+		#groups {
+			padding-right: 16px;
+		}
 	}
 
 	.input-wrapper {
@@ -429,10 +443,6 @@ export default {
 		> * {
 			margin-left: 8px;
 		}
-	}
-
-	#conversations {
-		padding-right: 16px;
 	}
 }
 </style>
