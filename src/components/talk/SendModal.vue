@@ -16,6 +16,13 @@
 				<CloseIcon v-show="query" @click="resetQuery" />
 			</div>
 			<div class="results">
+				<NcEmptyContent v-if="noResults"
+					class="central-empty-content"
+					:title="t('integration_miro', 'No conversation found')">
+					<template #icon>
+						<MagnifyIcon />
+					</template>
+				</NcEmptyContent>
 				<div v-show="conversationsToShow.length > 0" id="conversations">
 					<h3>
 						{{ t('integration_miro', 'Conversations') }}
@@ -82,7 +89,6 @@
 					</ul>
 				</div>
 			</div>
-			<div class="spacer" />
 			<div class="modal-footer">
 				<div class="spacer" />
 				<NcButton @click="$emit('close')">
@@ -105,11 +111,13 @@
 
 import CloseIcon from 'vue-material-design-icons/Close.vue'
 import SendIcon from 'vue-material-design-icons/Send.vue'
+import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 
 import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
 import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcListItem from '@nextcloud/vue/dist/Components/NcListItem.js'
+import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
 
 import { showSuccess, showError } from '@nextcloud/dialogs'
 import { generateOcsUrl } from '@nextcloud/router'
@@ -132,7 +140,9 @@ export default {
 		NcModal,
 		SendIcon,
 		CloseIcon,
+		MagnifyIcon,
 		NcListItem,
+		NcEmptyContent,
 	},
 
 	props: {
@@ -160,6 +170,11 @@ export default {
 	computed: {
 		publicLink() {
 			return this.board.viewLink
+		},
+		noResults() {
+			return this.conversationsToShow.length === 0
+				&& this.usersToShow.length === 0
+				&& this.groupsToShow.length === 0
 		},
 		conversationsToShow() {
 			return [
@@ -404,14 +419,21 @@ export default {
 	}
 
 	.results {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
 		overflow-y: scroll;
 		scrollbar-width: auto;
 		scrollbar-color: var(--color-primary);
 
+		.central-empty-content {
+			margin: auto;
+		}
+
 		#conversations,
 		#users,
 		#groups {
-			padding-right: 16px;
+			width: 95%;
 		}
 	}
 
