@@ -1,6 +1,6 @@
 # Miro integration into Nextcloud
 
-Miro integration lets users create boards, share board links and open boards directly in Nextcloud.
+Miro integration lets users create boards, share board links in Talk and open boards directly from Nextcloud.
 
 ## 🔧 Configuration
 
