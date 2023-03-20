@@ -159,6 +159,12 @@ export default {
 
 	beforeMount() {
 		console.debug('state', this.state)
+		if (this.state.board_list_error) {
+			showError(
+				t('integration_miro', 'Failed to get boards')
+				+ ': ' + this.state.board_list_error
+			)
+		}
 	},
 
 	mounted() {

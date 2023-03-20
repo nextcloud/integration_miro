@@ -100,7 +100,12 @@ class PageController extends Controller {
 			'board_list' => [],
 		];
 		if ($token !== '') {
-			$pageInitialState['board_list'] = $this->miroAPIService->getMyBoards($this->userId);
+			$boards = $this->miroAPIService->getMyBoards($this->userId);
+			if (isset($boards['error'])) {
+				$pageInitialState['board_list_error'] = $boards['error'];
+			} else {
+				$pageInitialState['board_list'] = $boards;
+			}
 		}
 		$this->initialStateService->provideInitialState('miro-state', $pageInitialState);
 		return new TemplateResponse(Application::APP_ID, 'main', []);
