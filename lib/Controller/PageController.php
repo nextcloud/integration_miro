@@ -15,6 +15,7 @@ use OCA\Miro\Service\MiroAPIService;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
+use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -41,6 +42,10 @@ class PageController extends Controller {
 	 */
 	private $appManager;
 	/**
+	 * @var IUserManager
+	 */
+	private $userManager;
+	/**
 	 * @var IInitialState
 	 */
 	private $initialStateService;
@@ -53,6 +58,7 @@ class PageController extends Controller {
 								IRequest $request,
 								IConfig $config,
 								IAppManager $appManager,
+								IUserManager $userManager,
 								IInitialState $initialStateService,
 								LoggerInterface $logger,
 								MiroAPIService $miroAPIService,
@@ -62,6 +68,7 @@ class PageController extends Controller {
 		$this->logger = $logger;
 		$this->config = $config;
 		$this->appManager = $appManager;
+		$this->userManager = $userManager;
 		$this->initialStateService = $initialStateService;
 		$this->miroAPIService = $miroAPIService;
 	}
@@ -85,7 +92,7 @@ class PageController extends Controller {
 		$miroTeamId = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_id');
 		$miroTeamName = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_name');
 
-		$talkEnabled = $this->appManager->isEnabledForUser('spreed', $this->userId);
+		$talkEnabled = $this->appManager->isEnabledForUser('spreed', $this->userManager->get($this->userId));
 
 		$pageInitialState = [
 			'token' => $token ? 'dummyTokenContent' : '',
