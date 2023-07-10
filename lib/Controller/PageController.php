@@ -85,7 +85,7 @@ class PageController extends Controller {
 		$miroTeamId = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_id');
 		$miroTeamName = $this->config->getUserValue($this->userId, Application::APP_ID, 'team_name');
 
-		$talkEnabled = $this->appManager->isEnabledForUser('spreed', $this->userId);
+		$talkEnabled = $this->appManager->isEnabledForUser('spreed');
 
 		$pageInitialState = [
 			'token' => $token ? 'dummyTokenContent' : '',
