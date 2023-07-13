@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## 0.0.1 – 2023-03-20
+## 1.0.1 – 2023-07-13
+### Fixed
+- Talk enabled check for Nextcloud 27
+
+### Added
+- Maintenance info in README.md
+- CODEOWNERS
+- Feedback bot
+
+### Changed
+- Switch release process to nextcloud-releases
+- Workflows updated from templates
+- Updated to node 20 and npm 9
+
+## 1.0.0 – 2023-03-20
 ### Added
 * the app
