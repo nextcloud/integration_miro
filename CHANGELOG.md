@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.0.2 - 2023-07-13
+### Fixed
+- Add .nextcloudignore and krankerl config
+
 ## 1.0.1 – 2023-07-13
 ### Fixed
 - Talk enabled check for Nextcloud 27
