@@ -11,16 +11,15 @@
 
 namespace OCA\Miro\Controller;
 
+use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\App\IAppManager;
-use OCP\AppFramework\Services\IInitialState;
-use OCP\IConfig;
-use Psr\Log\LoggerInterface;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\AppFramework\Services\IInitialState;
+use OCP\IConfig;
 use OCP\IRequest;
-
-use OCA\Miro\AppInfo\Application;
+use Psr\Log\LoggerInterface;
 
 class PageController extends Controller {
 
@@ -50,13 +49,13 @@ class PageController extends Controller {
 	private $miroAPIService;
 
 	public function __construct(string $appName,
-								IRequest $request,
-								IConfig $config,
-								IAppManager $appManager,
-								IInitialState $initialStateService,
-								LoggerInterface $logger,
-								MiroAPIService $miroAPIService,
-								?string $userId) {
+		IRequest $request,
+		IConfig $config,
+		IAppManager $appManager,
+		IInitialState $initialStateService,
+		LoggerInterface $logger,
+		MiroAPIService $miroAPIService,
+		?string $userId) {
 		parent::__construct($appName, $request);
 		$this->userId = $userId;
 		$this->logger = $logger;

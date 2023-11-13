@@ -17,12 +17,12 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use OCA\Miro\AppInfo\Application;
 use OCP\Files\IRootFolder;
+use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IURLGenerator;
-use Psr\Log\LoggerInterface;
-use OCP\Http\Client\IClientService;
 use OCP\Share\IManager as ShareManager;
+use Psr\Log\LoggerInterface;
 
 class MiroAPIService {
 	/**
@@ -61,14 +61,14 @@ class MiroAPIService {
 	/**
 	 * Service to make requests to Miro API
 	 */
-	public function __construct (string $appName,
-								LoggerInterface $logger,
-								IL10N $l10n,
-								IConfig $config,
-								IRootFolder $root,
-								ShareManager $shareManager,
-								IURLGenerator $urlGenerator,
-								IClientService $clientService) {
+	public function __construct(string $appName,
+		LoggerInterface $logger,
+		IL10N $l10n,
+		IConfig $config,
+		IRootFolder $root,
+		ShareManager $shareManager,
+		IURLGenerator $urlGenerator,
+		IClientService $clientService) {
 		$this->appName = $appName;
 		$this->logger = $logger;
 		$this->l10n = $l10n;
@@ -131,7 +131,7 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		return array_map(static function(array $board) {
+		return array_map(static function (array $board) {
 			$board['createdByName'] = $board['createdBy']['name'] ?? '??';
 			$board['trash'] = false;
 			return $board;
@@ -192,16 +192,16 @@ class MiroAPIService {
 	 * @throws Exception
 	 */
 	public function request(string $userId, string $endPoint, array $params = [], string $method = 'GET',
-							bool $jsonResponse = true) {
+		bool $jsonResponse = true) {
 		$this->checkTokenExpiration($userId);
 		$accessToken = $this->config->getUserValue($userId, Application::APP_ID, 'token');
 		try {
 			$url = Application::MIRO_API_BASE_URL . '/' . $endPoint;
 			$options = [
 				'headers' => [
-					'Authorization'  => 'Bearer ' . $accessToken,
+					'Authorization' => 'Bearer ' . $accessToken,
 					'Accept' => 'application/json',
-					'User-Agent'  => Application::INTEGRATION_USER_AGENT,
+					'User-Agent' => Application::INTEGRATION_USER_AGENT,
 				],
 			];
 
@@ -227,11 +227,11 @@ class MiroAPIService {
 
 			if ($method === 'GET') {
 				$response = $this->client->get($url, $options);
-			} else if ($method === 'POST') {
+			} elseif ($method === 'POST') {
 				$response = $this->client->post($url, $options);
-			} else if ($method === 'PUT') {
+			} elseif ($method === 'PUT') {
 				$response = $this->client->put($url, $options);
-			} else if ($method === 'DELETE') {
+			} elseif ($method === 'DELETE') {
 				$response = $this->client->delete($url, $options);
 			} else {
 				return ['error' => $this->l10n->t('Bad HTTP method')];
@@ -290,7 +290,7 @@ class MiroAPIService {
 			'client_id' => $clientID,
 			'client_secret' => $clientSecret,
 			'grant_type' => 'refresh_token',
-//			'redirect_uri' => $redirect_uri,
+			//			'redirect_uri' => $redirect_uri,
 			'refresh_token' => $refreshToken,
 		], 'POST');
 		if (isset($result['access_token'])) {
@@ -327,7 +327,7 @@ class MiroAPIService {
 			$url = Application::MIRO_API_BASE_URL . '/v1/oauth/token';
 			$options = [
 				'headers' => [
-					'User-Agent'  => Application::INTEGRATION_USER_AGENT,
+					'User-Agent' => Application::INTEGRATION_USER_AGENT,
 				]
 			];
 
@@ -342,11 +342,11 @@ class MiroAPIService {
 
 			if ($method === 'GET') {
 				$response = $this->client->get($url, $options);
-			} else if ($method === 'POST') {
+			} elseif ($method === 'POST') {
 				$response = $this->client->post($url, $options);
-			} else if ($method === 'PUT') {
+			} elseif ($method === 'PUT') {
 				$response = $this->client->put($url, $options);
-			} else if ($method === 'DELETE') {
+			} elseif ($method === 'DELETE') {
 				$response = $this->client->delete($url, $options);
 			} else {
 				return ['error' => $this->l10n->t('Bad HTTP method')];

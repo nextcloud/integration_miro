@@ -12,18 +12,17 @@
 namespace OCA\Miro\Controller;
 
 use DateTime;
+use OCA\Miro\AppInfo\Application;
+use OCA\Miro\Service\MiroAPIService;
+use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
-use OCP\IURLGenerator;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IRequest;
-use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Controller;
-
-use OCA\Miro\Service\MiroAPIService;
-use OCA\Miro\AppInfo\Application;
+use OCP\IURLGenerator;
 
 class ConfigController extends Controller {
 
@@ -53,13 +52,13 @@ class ConfigController extends Controller {
 	private $initialStateService;
 
 	public function __construct(string $appName,
-								IRequest $request,
-								IConfig $config,
-								IURLGenerator $urlGenerator,
-								IL10N $l,
-								IInitialState $initialStateService,
-								MiroAPIService $miroAPIService,
-								?string $userId) {
+		IRequest $request,
+		IConfig $config,
+		IURLGenerator $urlGenerator,
+		IL10N $l,
+		IInitialState $initialStateService,
+		MiroAPIService $miroAPIService,
+		?string $userId) {
 		parent::__construct($appName, $request);
 		$this->config = $config;
 		$this->urlGenerator = $urlGenerator;
@@ -170,7 +169,7 @@ class ConfigController extends Controller {
 		// anyway, reset state
 		$this->config->deleteUserValue($this->userId, Application::APP_ID, 'oauth_state');
 
-//		if ($clientID && $clientSecret && $configState !== '' && $configState === $state) {
+		//		if ($clientID && $clientSecret && $configState !== '' && $configState === $state) {
 		if ($clientID && $clientSecret) {
 			$redirect_uri = $this->config->getUserValue($this->userId, Application::APP_ID, 'redirect_uri');
 			$result = $this->miroAPIService->requestOAuthAccessToken([
@@ -235,8 +234,8 @@ class ConfigController extends Controller {
 	private function storeUserInfo(): array {
 		$info = $this->miroAPIService->request($this->userId, 'v1/oauth-token');
 		if (isset(
-				$info['team'], $info['team']['name'], $info['team']['id'],
-				$info['user'], $info['user']['name'], $info['user']['id']
+			$info['team'], $info['team']['name'], $info['team']['id'],
+			$info['user'], $info['user']['name'], $info['user']['id']
 		)) {
 			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_id', $info['user']['id'] ?? '');
 			$this->config->setUserValue($this->userId, Application::APP_ID, 'user_name', $info['user']['name'] ?? '');

@@ -11,16 +11,15 @@
 
 namespace OCA\Miro\Controller;
 
+use OCA\Miro\AppInfo\Application;
+use OCA\Miro\Service\MiroAPIService;
+use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataDisplayResponse;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IConfig;
 use OCP\IRequest;
-use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Controller;
-
-use OCA\Miro\Service\MiroAPIService;
-use OCA\Miro\AppInfo\Application;
 use OCP\IURLGenerator;
 
 class MiroAPIController extends Controller {
@@ -47,11 +46,11 @@ class MiroAPIController extends Controller {
 	private $urlGenerator;
 
 	public function __construct(string $appName,
-								IRequest $request,
-								IConfig $config,
-								IURLGenerator $urlGenerator,
-								MiroAPIService $miroAPIService,
-								?string $userId) {
+		IRequest $request,
+		IConfig $config,
+		IURLGenerator $urlGenerator,
+		MiroAPIService $miroAPIService,
+		?string $userId) {
 		parent::__construct($appName, $request);
 		$this->config = $config;
 		$this->miroAPIService = $miroAPIService;
@@ -92,7 +91,7 @@ class MiroAPIController extends Controller {
 	 * @param int $useFallback
 	 * @return DataDisplayResponse|RedirectResponse
 	 */
-	public function getTeamAvatar(string $teamId, int $useFallback = 1)	{
+	public function getTeamAvatar(string $teamId, int $useFallback = 1) {
 		$result = $this->miroAPIService->getTeamAvatar($this->userId, $teamId, $this->miroUrl);
 		if (isset($result['avatarContent'])) {
 			$response = new DataDisplayResponse($result['avatarContent']);
