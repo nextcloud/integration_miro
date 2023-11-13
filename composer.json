@@ -1,0 +1,11 @@
+{
+	"name": "nextcloud/integration_miro",
+	"type": "project",
+	"license": "APL-3.0-or-later",
+	"autoload": {
+		"psr-4": {
+			"OCA\\Miro\\": "lib/"
+		}
+	},
+	"minimum-stability": "stable"
+}
