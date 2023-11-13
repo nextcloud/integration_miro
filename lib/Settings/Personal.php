@@ -1,13 +1,14 @@
 <?php
+
 namespace OCA\Miro\Settings;
 
+use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
-use OCP\Settings\ISettings;
 
-use OCA\Miro\AppInfo\Application;
+use OCP\Settings\ISettings;
 
 class Personal implements ISettings {
 
@@ -29,9 +30,9 @@ class Personal implements ISettings {
 	private $miroAPIService;
 
 	public function __construct(IConfig $config,
-								IInitialState $initialStateService,
-								MiroAPIService $miroAPIService,
-								?string $userId) {
+		IInitialState $initialStateService,
+		MiroAPIService $miroAPIService,
+		?string $userId) {
 		$this->config = $config;
 		$this->initialStateService = $initialStateService;
 		$this->userId = $userId;

@@ -1,12 +1,12 @@
 <?php
+
 namespace OCA\Miro\Settings;
 
+use OCA\Miro\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
 use OCP\Settings\ISettings;
-
-use OCA\Miro\AppInfo\Application;
 
 class Admin implements ISettings {
 
@@ -20,7 +20,7 @@ class Admin implements ISettings {
 	private $initialStateService;
 
 	public function __construct(IConfig $config,
-								IInitialState $initialStateService) {
+		IInitialState $initialStateService) {
 		$this->config = $config;
 		$this->initialStateService = $initialStateService;
 	}
