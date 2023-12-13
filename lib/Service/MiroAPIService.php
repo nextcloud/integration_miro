@@ -16,19 +16,12 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use OCA\Miro\AppInfo\Application;
-use OCP\Files\IRootFolder;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\IURLGenerator;
-use OCP\Share\IManager as ShareManager;
 use Psr\Log\LoggerInterface;
 
 class MiroAPIService {
-	/**
-	 * @var string
-	 */
-	private $appName;
 	/**
 	 * @var LoggerInterface
 	 */
@@ -46,37 +39,23 @@ class MiroAPIService {
 	 */
 	private $config;
 	/**
-	 * @var IRootFolder
-	 */
-	private $root;
-	/**
-	 * @var ShareManager
-	 */
-	private $shareManager;
-	/**
-	 * @var IURLGenerator
-	 */
-	private $urlGenerator;
-
-	/**
 	 * Service to make requests to Miro API
 	 */
-	public function __construct(string $appName,
+	public function __construct(
 		LoggerInterface $logger,
 		IL10N $l10n,
 		IConfig $config,
-		IRootFolder $root,
-		ShareManager $shareManager,
-		IURLGenerator $urlGenerator,
 		IClientService $clientService) {
-		$this->appName = $appName;
 		$this->logger = $logger;
 		$this->l10n = $l10n;
 		$this->client = $clientService->newClient();
 		$this->config = $config;
-		$this->root = $root;
-		$this->shareManager = $shareManager;
-		$this->urlGenerator = $urlGenerator;
+	}
+
+	private function formatBoard(array $board): array {
+		$board['createdByName'] = $board['createdBy']['name'] ?? '??';
+		$board['trash'] = false;
+		return $board;
 	}
 
 	/**
@@ -111,8 +90,8 @@ class MiroAPIService {
 			return ['avatarContent' => $image];
 		}
 
-		$userInfo = $this->request($userId, 'teams/' . $teamId);
-		return ['teamInfo' => $userInfo];
+		$teamInfo = $this->request($userId, 'teams/' . $teamId);
+		return ['teamInfo' => $teamInfo];
 	}
 
 	/**
@@ -131,11 +110,7 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		return array_map(static function (array $board) {
-			$board['createdByName'] = $board['createdBy']['name'] ?? '??';
-			$board['trash'] = false;
-			return $board;
-		}, $result['data'] ?? []);
+		return array_map(fn (array $board) => $this->formatBoard($board), $result['data'] ?? []);
 	}
 
 	/**
@@ -167,9 +142,7 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		$result['createdByName'] = $result['createdBy']['name'] ?? '??';
-		$result['trash'] = false;
-		return $result;
+		return $this->formatBoard($result);
 	}
 
 	/**
