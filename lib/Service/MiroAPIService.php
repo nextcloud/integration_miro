@@ -52,6 +52,12 @@ class MiroAPIService {
 		$this->config = $config;
 	}
 
+	private function formatBoard(array $board): array {
+		$board['createdByName'] = $board['createdBy']['name'] ?? '??';
+		$board['trash'] = false;
+		return $board;
+	}
+
 	/**
 	 * @param string $userId
 	 * @param string $miroUserId
@@ -104,11 +110,7 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		return array_map(static function (array $board) {
-			$board['createdByName'] = $board['createdBy']['name'] ?? '??';
-			$board['trash'] = false;
-			return $board;
-		}, $result['data'] ?? []);
+		return array_map(fn (array $board) => $this->formatBoard($board), $result['data'] ?? []);
 	}
 
 	/**
@@ -140,9 +142,7 @@ class MiroAPIService {
 		if (isset($result['error'])) {
 			return $result;
 		}
-		$result['createdByName'] = $result['createdBy']['name'] ?? '??';
-		$result['trash'] = false;
-		return $result;
+		return $this->formatBoard($result);
 	}
 
 	/**
