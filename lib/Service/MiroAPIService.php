@@ -16,19 +16,12 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use OCA\Miro\AppInfo\Application;
-use OCP\Files\IRootFolder;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
-use OCP\IURLGenerator;
-use OCP\Share\IManager as ShareManager;
 use Psr\Log\LoggerInterface;
 
 class MiroAPIService {
-	/**
-	 * @var string
-	 */
-	private $appName;
 	/**
 	 * @var LoggerInterface
 	 */
@@ -46,37 +39,17 @@ class MiroAPIService {
 	 */
 	private $config;
 	/**
-	 * @var IRootFolder
-	 */
-	private $root;
-	/**
-	 * @var ShareManager
-	 */
-	private $shareManager;
-	/**
-	 * @var IURLGenerator
-	 */
-	private $urlGenerator;
-
-	/**
 	 * Service to make requests to Miro API
 	 */
-	public function __construct(string $appName,
+	public function __construct(
 		LoggerInterface $logger,
 		IL10N $l10n,
 		IConfig $config,
-		IRootFolder $root,
-		ShareManager $shareManager,
-		IURLGenerator $urlGenerator,
 		IClientService $clientService) {
-		$this->appName = $appName;
 		$this->logger = $logger;
 		$this->l10n = $l10n;
 		$this->client = $clientService->newClient();
 		$this->config = $config;
-		$this->root = $root;
-		$this->shareManager = $shareManager;
-		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
