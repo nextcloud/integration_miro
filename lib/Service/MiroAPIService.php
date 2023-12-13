@@ -84,8 +84,8 @@ class MiroAPIService {
 			return ['avatarContent' => $image];
 		}
 
-		$userInfo = $this->request($userId, 'teams/' . $teamId);
-		return ['teamInfo' => $userInfo];
+		$teamInfo = $this->request($userId, 'teams/' . $teamId);
+		return ['teamInfo' => $teamInfo];
 	}
 
 	/**
