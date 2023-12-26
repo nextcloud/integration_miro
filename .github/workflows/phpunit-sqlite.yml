@@ -38,6 +38,7 @@ jobs:
               - '.php-cs-fixer.dist.php'
               - 'composer.json'
               - 'composer.lock'
+
   phpunit-sqlite:
     runs-on: ubuntu-latest
 
@@ -54,6 +55,7 @@ jobs:
         run: |
           # Split and keep last
           echo "APP_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+
       - name: Checkout server
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
@@ -67,7 +69,7 @@ jobs:
           path: apps/${{ env.APP_NAME }}
 
       - name: Set up php ${{ matrix.php-versions }}
-        uses: shivammathur/setup-php@81cd5ae0920b34eef300e1775313071038a53429 # v2
+        uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35 # v2
         with:
           php-version: ${{ matrix.php-versions }}
           # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
@@ -96,12 +98,14 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
           ./occ app:enable --force ${{ env.APP_NAME }}
+
       - name: Check PHPUnit script is defined
         id: check_phpunit
         continue-on-error: true
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer run --list | grep "^  test:unit " | wc -l | grep 1
+
       - name: PHPUnit
         # Only run if phpunit config file exists
         if: steps.check_phpunit.outcome == 'success'
@@ -114,6 +118,7 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: |
           composer run --list | grep "^  test:integration " | wc -l | grep 1
+
       - name: Run Nextcloud
         # Only run if phpunit integration config file exists
         if: steps.check_integration.outcome == 'success'
@@ -129,12 +134,14 @@ jobs:
         if: always()
         run: |
           cat data/nextcloud.log
+
       - name: Skipped
         # Fail the action when neither unit nor integration tests ran
         if: steps.check_phpunit.outcome == 'failure' && steps.check_integration.outcome == 'failure'
         run: |
           echo 'Neither PHPUnit nor PHPUnit integration tests are specified in composer.json scripts'
           exit 1
+
   summary:
     permissions:
       contents: none
