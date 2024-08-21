@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.0.5 - 2024-08-21
+### Added
+- Support Nextcloud 30
+
 ## 1.0.4 - 2024-03-12
 ### Added
 - Support Nextcloud 29
