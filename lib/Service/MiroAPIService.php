@@ -136,7 +136,7 @@ class MiroAPIService {
 	/**
 	 * @param string $userId
 	 * @param string $boardId
-	 * @return array|string[]
+	 * @return array|null
 	 * @throws Exception
 	 */
 	public function deleteBoard(string $userId, string $boardId): ?array {
