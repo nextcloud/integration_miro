@@ -64,6 +64,7 @@
 			</NcEmptyContent>
 		</NcAppContent>
 		<NcModal v-if="creationModalOpen"
+			:name="t('integration_miro', 'Create a board')"
 			size="small"
 			@close="closeCreationModal">
 			<CreationForm

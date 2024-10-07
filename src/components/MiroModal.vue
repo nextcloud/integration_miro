@@ -1,5 +1,6 @@
 <template>
 	<NcModal
+		:name="t('integration_miro', 'Miro board')"
 		size="full"
 		:close-button-contained="false"
 		@close="$emit('close')">

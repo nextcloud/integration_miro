@@ -15,6 +15,8 @@ use DateTime;
 use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -26,53 +28,23 @@ use OCP\IURLGenerator;
 
 class ConfigController extends Controller {
 
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
-	 * @var IURLGenerator
-	 */
-	private $urlGenerator;
-	/**
-	 * @var IL10N
-	 */
-	private $l;
-	/**
-	 * @var MiroAPIService
-	 */
-	private $miroAPIService;
-	/**
-	 * @var string|null
-	 */
-	private $userId;
-	/**
-	 * @var IInitialState
-	 */
-	private $initialStateService;
-
-	public function __construct(string $appName,
+	public function __construct(
+		string $appName,
 		IRequest $request,
-		IConfig $config,
-		IURLGenerator $urlGenerator,
-		IL10N $l,
-		IInitialState $initialStateService,
-		MiroAPIService $miroAPIService,
-		?string $userId) {
+		private IConfig $config,
+		private IURLGenerator $urlGenerator,
+		private IL10N $l,
+		private IInitialState $initialStateService,
+		private MiroAPIService $miroAPIService,
+		private ?string $userId,
+	) {
 		parent::__construct($appName, $request);
-		$this->config = $config;
-		$this->urlGenerator = $urlGenerator;
-		$this->l = $l;
-		$this->miroAPIService = $miroAPIService;
-		$this->userId = $userId;
-		$this->initialStateService = $initialStateService;
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * @return DataResponse
 	 */
+	#[NoAdminRequired]
 	public function isUserConnected(): DataResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
 
@@ -91,11 +63,11 @@ class ConfigController extends Controller {
 
 	/**
 	 * set config values
-	 * @NoAdminRequired
 	 *
 	 * @param array $values
 	 * @return DataResponse
 	 */
+	#[NoAdminRequired]
 	public function setConfig(array $values): DataResponse {
 		// revoke the token
 		if (isset($values['token']) && $values['token'] === '') {
@@ -140,13 +112,12 @@ class ConfigController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 *
 	 * @param string $user_name
 	 * @param string $user_id
 	 * @return TemplateResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function popupSuccessPage(string $user_name, string $user_id): TemplateResponse {
 		$this->initialStateService->provideInitialState('popup-data', ['user_name' => $user_name, 'user_id' => $user_id]);
 		return new TemplateResponse(Application::APP_ID, 'popupSuccess', [], TemplateResponse::RENDER_AS_GUEST);
@@ -154,13 +125,13 @@ class ConfigController extends Controller {
 
 	/**
 	 * receive oauth code and get oauth access token
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 *
 	 * @param string $code
 	 * @param string $state
 	 * @return RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function oauthRedirect(string $code = '', string $state = ''): RedirectResponse {
 		$configState = $this->config->getUserValue($this->userId, Application::APP_ID, 'oauth_state');
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
