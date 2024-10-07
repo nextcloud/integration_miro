@@ -162,7 +162,7 @@ export default {
 		if (this.state.board_list_error) {
 			showError(
 				t('integration_miro', 'Failed to get boards')
-				+ ': ' + this.state.board_list_error
+				+ ': ' + this.state.board_list_error,
 			)
 		}
 	},
@@ -196,10 +196,7 @@ export default {
 			axios.get(url).then((response) => {
 				this.state.board_list.push(...response.data)
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to get boards')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to get boards'))
 				console.debug(error)
 			}).then(() => {
 			})
@@ -227,10 +224,7 @@ export default {
 				this.selectedBoardId = responseBoard.id
 				this.creationModalOpen = false
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to create new board')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to create new board'))
 				console.debug(error)
 			}).then(() => {
 				this.creating = false
@@ -245,10 +239,7 @@ export default {
 			const url = generateUrl('/apps/integration_miro/boards/{boardId}', { boardId })
 			axios.delete(url).then((response) => {
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to delete the board')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to delete the board'))
 				console.debug(error)
 			})
 		},
@@ -275,7 +266,7 @@ export default {
 					deletionTimer.pause()
 					board.trash = false
 				},
-				{ timeout: 10000 }
+				{ timeout: 10000 },
 			)
 		},
 	},

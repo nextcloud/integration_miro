@@ -68,10 +68,7 @@ export function oauthConnect(clientId, oauthOrigin, usePopup = false) {
 				window.location.replace(requestUrl)
 			}
 		}).catch((error) => {
-			showError(
-				t('integration_miro', 'Failed to save Miro OAuth state')
-				+ ': ' + (error.response?.request?.responseText ?? '')
-			)
+			showError(t('integration_miro', 'Failed to save Miro OAuth state'))
 			console.error(error)
 		})
 	})
@@ -92,7 +89,7 @@ export function oauthConnectConfirmDialog() {
 				'You can change Miro integration settings in the {settingsHtmlLink} section of your personal settings.',
 				{ settingsHtmlLink },
 				null,
-				{ escape: false }
+				{ escape: false },
 			),
 			t('integration_miro', 'Connect to Miro'),
 			'none',

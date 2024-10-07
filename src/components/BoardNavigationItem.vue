@@ -27,7 +27,6 @@
 import DeleteIcon from 'vue-material-design-icons/Delete.vue'
 import ClipboardEditIcon from 'vue-material-design-icons/ClipboardEdit.vue'
 import ClipboardEditOutlineIcon from 'vue-material-design-icons/ClipboardEditOutline.vue'
-import ClickOutside from 'vue-click-outside'
 
 import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 import NcAppNavigationItem from '@nextcloud/vue/dist/Components/NcAppNavigationItem.js'
@@ -40,9 +39,6 @@ export default {
 		ClipboardEditIcon,
 		ClipboardEditOutlineIcon,
 		DeleteIcon,
-	},
-	directives: {
-		ClickOutside,
 	},
 	props: {
 		board: {

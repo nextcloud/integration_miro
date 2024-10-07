@@ -335,10 +335,7 @@ export default {
 				this.selectedRoom.token = response.data.ocs.data.token
 				this.sendLink()
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to join')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to join'))
 				console.debug(error)
 				this.sending = false
 			})
@@ -356,10 +353,7 @@ export default {
 				showSuccess(t('integration_miro', 'You joined {name}', { name: this.selectedRoom.displayName }))
 				this.sendLink()
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to join')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to join'))
 				console.debug(error)
 				this.sending = false
 			})
@@ -379,10 +373,7 @@ export default {
 				showSuccess(t('integration_miro', 'Link sent to {name}', { name: this.selectedRoom.displayName }))
 				this.$emit('close')
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to send link')
-					+ ': ' + (error.response?.data?.error ?? error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to send link'))
 				console.debug(error)
 			}).then(() => {
 				this.sending = false

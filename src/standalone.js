@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import './bootstrap.js'
 import { loadState } from '@nextcloud/initial-state'
 import MiroModalWrapper from './components/MiroModalWrapper.vue'
+Vue.mixin({ methods: { t, n } })
 
 function init() {
 	if (!OCA.Miro) {
