@@ -16,40 +16,28 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use OCA\Miro\AppInfo\Application;
+use OCP\Http\Client\IClient;
 use OCP\Http\Client\IClientService;
 use OCP\IConfig;
 use OCP\IL10N;
+use OCP\Security\ICrypto;
 use Psr\Log\LoggerInterface;
 
 class MiroAPIService {
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-	/**
-	 * @var IL10N
-	 */
-	private $l10n;
-	/**
-	 * @var \OCP\Http\Client\IClient
-	 */
-	private $client;
-	/**
-	 * @var IConfig
-	 */
-	private $config;
+
+	private IClient $client;
+
 	/**
 	 * Service to make requests to Miro API
 	 */
 	public function __construct(
-		LoggerInterface $logger,
-		IL10N $l10n,
-		IConfig $config,
-		IClientService $clientService) {
-		$this->logger = $logger;
-		$this->l10n = $l10n;
+		private LoggerInterface $logger,
+		private IL10N $l10n,
+		private IConfig $config,
+		private ICrypto $crypto,
+		IClientService $clientService,
+	) {
 		$this->client = $clientService->newClient();
-		$this->config = $config;
 	}
 
 	private function formatBoard(array $board): array {
@@ -164,10 +152,12 @@ class MiroAPIService {
 	 * @return array|mixed|resource|string|string[]
 	 * @throws Exception
 	 */
-	public function request(string $userId, string $endPoint, array $params = [], string $method = 'GET',
-		bool $jsonResponse = true) {
+	public function request(
+		string $userId, string $endPoint, array $params = [], string $method = 'GET', bool $jsonResponse = true,
+	) {
 		$this->checkTokenExpiration($userId);
 		$accessToken = $this->config->getUserValue($userId, Application::APP_ID, 'token');
+		$accessToken = $accessToken === '' ? '' : $this->crypto->decrypt($accessToken);
 		try {
 			$url = Application::MIRO_API_BASE_URL . '/' . $endPoint;
 			$options = [
@@ -221,8 +211,8 @@ class MiroAPIService {
 					return $body;
 				}
 			}
-		} catch (ServerException | ClientException $e) {
-			$this->logger->debug('Miro API error : '.$e->getMessage(), ['app' => Application::APP_ID]);
+		} catch (ServerException|ClientException $e) {
+			$this->logger->debug('Miro API error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
 	}
@@ -237,7 +227,7 @@ class MiroAPIService {
 		$expireAt = $this->config->getUserValue($userId, Application::APP_ID, 'token_expires_at');
 		if ($refreshToken !== '' && $expireAt !== '') {
 			$nowTs = (new Datetime())->getTimestamp();
-			$expireAt = (int) $expireAt;
+			$expireAt = (int)$expireAt;
 			// if token expires in less than a minute or is already expired
 			if ($nowTs > $expireAt - 60) {
 				$this->refreshToken($userId);
@@ -252,9 +242,12 @@ class MiroAPIService {
 	 */
 	private function refreshToken(string $userId): bool {
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
+		$clientID = $clientID === '' ? '' : $this->crypto->decrypt($clientID);
 		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
-		$redirect_uri = $this->config->getUserValue($userId, Application::APP_ID, 'redirect_uri');
+		$clientSecret = $clientSecret === '' ? '' : $this->crypto->decrypt($clientSecret);
+		// $redirect_uri = $this->config->getUserValue($userId, Application::APP_ID, 'redirect_uri');
 		$refreshToken = $this->config->getUserValue($userId, Application::APP_ID, 'refresh_token');
+		$refreshToken = $refreshToken === '' ? '' : $this->crypto->decrypt($refreshToken);
 		if (!$refreshToken) {
 			$this->logger->error('No Miro refresh token found', ['app' => Application::APP_ID]);
 			return false;
@@ -263,18 +256,20 @@ class MiroAPIService {
 			'client_id' => $clientID,
 			'client_secret' => $clientSecret,
 			'grant_type' => 'refresh_token',
-			//			'redirect_uri' => $redirect_uri,
+			// 'redirect_uri' => $redirect_uri,
 			'refresh_token' => $refreshToken,
 		], 'POST');
 		if (isset($result['access_token'])) {
 			$this->logger->info('Miro access token successfully refreshed', ['app' => Application::APP_ID]);
-			$accessToken = $result['access_token'];
-			$refreshToken = $result['refresh_token'];
-			$this->config->setUserValue($userId, Application::APP_ID, 'token', $accessToken);
-			$this->config->setUserValue($userId, Application::APP_ID, 'refresh_token', $refreshToken);
+			$accessToken = $result['access_token'] ?? '';
+			$refreshToken = $result['refresh_token'] ?? '';
+			$encryptedAccessToken = $accessToken === '' ? '' : $this->crypto->encrypt($accessToken);
+			$encryptedRefreshToken = $refreshToken === '' ? '' : $this->crypto->encrypt($refreshToken);
+			$this->config->setUserValue($userId, Application::APP_ID, 'token', $encryptedAccessToken);
+			$this->config->setUserValue($userId, Application::APP_ID, 'refresh_token', $encryptedRefreshToken);
 			if (isset($result['expires_in'])) {
 				$nowTs = (new Datetime())->getTimestamp();
-				$expiresAt = $nowTs + (int) $result['expires_in'];
+				$expiresAt = $nowTs + (int)$result['expires_in'];
 				$this->config->setUserValue($userId, Application::APP_ID, 'token_expires_at', $expiresAt);
 			}
 			return true;
@@ -333,13 +328,14 @@ class MiroAPIService {
 				return json_decode($body, true);
 			}
 		} catch (Exception $e) {
-			$this->logger->warning('Miro OAuth error : '.$e->getMessage(), ['app' => Application::APP_ID]);
+			$this->logger->warning('Miro OAuth error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			return ['error' => $e->getMessage()];
 		}
 	}
 
 	public function revokeToken(string $userId): bool {
 		$token = $this->config->getUserValue($userId, Application::APP_ID, 'token');
+		$token = $token === '' ? '' : $this->crypto->decrypt($token);
 		$revokeResponse = $this->request($userId, 'v1/oauth/revoke?access_token=' . $token, [], 'POST', false);
 		return $revokeResponse === '';
 	}

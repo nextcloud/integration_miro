@@ -10,19 +10,10 @@ use OCP\Settings\ISettings;
 
 class Admin implements ISettings {
 
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
-	 * @var IInitialState
-	 */
-	private $initialStateService;
-
-	public function __construct(IConfig $config,
-		IInitialState $initialStateService) {
-		$this->config = $config;
-		$this->initialStateService = $initialStateService;
+	public function __construct(
+		private IConfig $config,
+		private IInitialState $initialStateService,
+	) {
 	}
 
 	/**
@@ -35,8 +26,8 @@ class Admin implements ISettings {
 		$overrideLinkClick = $this->config->getAppValue(Application::APP_ID, 'override_link_click', '0') === '1';
 
 		$adminConfig = [
-			'client_id' => $clientID,
-			'client_secret' => $clientSecret,
+			'client_id' => $clientID === '' ? '' : 'dummy-client-id',
+			'client_secret' => $clientSecret === '' ? '' : 'dummy-client-secret',
 			'use_popup' => $usePopup,
 			'override_link_click' => $overrideLinkClick,
 		];

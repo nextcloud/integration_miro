@@ -21,6 +21,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
 use OCP\IRequest;
+use OCP\Security\ICrypto;
 
 class PageController extends Controller {
 
@@ -31,7 +32,8 @@ class PageController extends Controller {
 		private IAppManager $appManager,
 		private IInitialState $initialStateService,
 		private MiroAPIService $miroAPIService,
-		private ?string $userId
+		private ICrypto $crypto,
+		private ?string $userId,
 	) {
 		parent::__construct($appName, $request);
 	}
@@ -45,8 +47,8 @@ class PageController extends Controller {
 	public function index(): TemplateResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
-		// don't expose the client secret to users
-		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret') !== '';
+		$clientID = $clientID === '' ? '' : $this->crypto->decrypt($clientID);
+		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
 		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
 
 		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
@@ -59,7 +61,8 @@ class PageController extends Controller {
 		$pageInitialState = [
 			'token' => $token ? 'dummyTokenContent' : '',
 			'client_id' => $clientID,
-			'client_secret' => $clientSecret,
+			// don't expose the client secret to users
+			'client_secret' => $clientSecret !== '',
 			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,

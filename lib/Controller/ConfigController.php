@@ -25,6 +25,7 @@ use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\IURLGenerator;
+use OCP\Security\ICrypto;
 
 class ConfigController extends Controller {
 
@@ -36,6 +37,7 @@ class ConfigController extends Controller {
 		private IL10N $l,
 		private IInitialState $initialStateService,
 		private MiroAPIService $miroAPIService,
+		private ICrypto $crypto,
 		private ?string $userId,
 	) {
 		parent::__construct($appName, $request);
@@ -75,7 +77,12 @@ class ConfigController extends Controller {
 		}
 
 		foreach ($values as $key => $value) {
-			$this->config->setUserValue($this->userId, Application::APP_ID, $key, $value);
+			if ($key === 'token' && $value !== '') {
+				$encryptedValue = $this->crypto->encrypt($value);
+				$this->config->setUserValue($this->userId, Application::APP_ID, $key, $encryptedValue);
+			} else {
+				$this->config->setUserValue($this->userId, Application::APP_ID, $key, $value);
+			}
 		}
 		$result = [];
 
@@ -106,7 +113,12 @@ class ConfigController extends Controller {
 	 */
 	public function setAdminConfig(array $values): DataResponse {
 		foreach ($values as $key => $value) {
-			$this->config->setAppValue(Application::APP_ID, $key, $value);
+			if (in_array($key, ['client_id', 'client_secret'], true) && $value !== '') {
+				$encryptedValue = $this->crypto->encrypt($value);
+				$this->config->setAppValue(Application::APP_ID, $key, $encryptedValue);
+			} else {
+				$this->config->setAppValue(Application::APP_ID, $key, $value);
+			}
 		}
 		return new DataResponse(1);
 	}
@@ -135,7 +147,9 @@ class ConfigController extends Controller {
 	public function oauthRedirect(string $code = '', string $state = ''): RedirectResponse {
 		$configState = $this->config->getUserValue($this->userId, Application::APP_ID, 'oauth_state');
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
+		$clientID = $clientID === '' ? '' : $this->crypto->decrypt($clientID);
 		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
+		$clientSecret = $clientSecret === '' ? '' : $this->crypto->decrypt($clientSecret);
 
 		// anyway, reset state
 		$this->config->deleteUserValue($this->userId, Application::APP_ID, 'oauth_state');
@@ -151,15 +165,17 @@ class ConfigController extends Controller {
 				'grant_type' => 'authorization_code'
 			], 'POST');
 			if (isset($result['access_token'])) {
-				$accessToken = $result['access_token'];
+				$accessToken = $result['access_token'] ?? '';
 				$refreshToken = $result['refresh_token'] ?? '';
 				if (isset($result['expires_in'])) {
 					$nowTs = (new Datetime())->getTimestamp();
-					$expiresAt = $nowTs + (int) $result['expires_in'];
+					$expiresAt = $nowTs + (int)$result['expires_in'];
 					$this->config->setUserValue($this->userId, Application::APP_ID, 'token_expires_at', $expiresAt);
 				}
-				$this->config->setUserValue($this->userId, Application::APP_ID, 'token', $accessToken);
-				$this->config->setUserValue($this->userId, Application::APP_ID, 'refresh_token', $refreshToken);
+				$encryptedAccessToken = $accessToken === '' ? '' : $this->crypto->encrypt($accessToken);
+				$this->config->setUserValue($this->userId, Application::APP_ID, 'token', $encryptedAccessToken);
+				$encryptedRefreshToken = $refreshToken === '' ? '' : $this->crypto->encrypt($refreshToken);
+				$this->config->setUserValue($this->userId, Application::APP_ID, 'refresh_token', $encryptedRefreshToken);
 				// some info come with the token
 				$this->config->setUserValue($this->userId, Application::APP_ID, 'user_id', $result['user_id']);
 				$this->config->setUserValue($this->userId, Application::APP_ID, 'team_id', $result['team_id']);

@@ -29,7 +29,7 @@ class MiroAPIController extends Controller {
 		IRequest $request,
 		private IURLGenerator $urlGenerator,
 		private MiroAPIService $miroAPIService,
-		private ?string $userId
+		private ?string $userId,
 	) {
 		parent::__construct($appName, $request);
 	}
