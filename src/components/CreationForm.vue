@@ -47,14 +47,14 @@
 						v-model="newBoard[fieldId]"
 						:placeholder="field.placeholder" />
 				</span>
-				<NcDatetimePicker v-else-if="field.type === 'ncDate'"
+				<NcDateTimePicker v-else-if="field.type === 'ncDate'"
 					:id="'board-' + fieldId"
 					v-model="newBoard[fieldId]"
 					type="date"
 					:placeholder="field.placeholder"
 					:clearable="true"
 					:confirm="false" />
-				<NcDatetimePicker v-else-if="field.type === 'ncDatetime'"
+				<NcDateTimePicker v-else-if="field.type === 'ncDatetime'"
 					:id="'board-' + fieldId"
 					v-model="newBoard[fieldId]"
 					type="datetime"
@@ -71,30 +71,6 @@
 							:style="{ backgroundColor: newBoard[fieldId] }" />
 					</NcColorPicker>
 				</div>
-				<NcMultiselect v-else-if="field.type === 'select'"
-					:value="newBoard[fieldId]"
-					:options="Object.values(field.options)"
-					label="label"
-					:placeholder="field.placeholder"
-					@input="setSelectValue(fieldId, $event)"
-					@search-change="query = $event">
-					<template #option="{option}">
-						<component :is="option.icon"
-							v-if="option.icon"
-							class="option-icon"
-							:size="20" />
-						<NcHighlight :text="option.label" :search="query" class="option-title multiselect-option-title" />
-					</template>
-					<template #singleLabel="{option}">
-						<component :is="option.icon"
-							v-if="option.icon"
-							class="multiselect-label-icon"
-							:size="20" />
-						<span class="option-title">
-							{{ option.label }}
-						</span>
-					</template>
-				</NcMultiselect>
 				<RadioElementSet v-else-if="field.type === 'customRadioSet'"
 					:name="fieldId + '_radio'"
 					:options="field.options"
@@ -187,9 +163,8 @@ import PaletteIcon from 'vue-material-design-icons/Palette.vue'
 import CheckIcon from 'vue-material-design-icons/Check.vue'
 
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcMultiselect from '@nextcloud/vue/dist/Components/NcMultiselect.js'
 import NcColorPicker from '@nextcloud/vue/dist/Components/NcColorPicker.js'
-import NcDatetimePicker from '@nextcloud/vue/dist/Components/NcDatetimePicker.js'
+import NcDateTimePicker from '@nextcloud/vue/dist/Components/NcDateTimePicker.js'
 import NcHighlight from '@nextcloud/vue/dist/Components/NcHighlight.js'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
 
@@ -208,8 +183,7 @@ export default {
 		EyeOutlineIcon,
 		EyeOffOutlineIcon,
 		NcButton,
-		NcMultiselect,
-		NcDatetimePicker,
+		NcDateTimePicker,
 		NcColorPicker,
 		NcHighlight,
 		NcCheckboxRadioSwitch,
@@ -240,7 +214,7 @@ export default {
 				Object.entries(this.fields)
 					.filter(([fieldId, field]) => {
 						return !field.readonly
-					})
+					}),
 			)
 		},
 	},

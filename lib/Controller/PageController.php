@@ -15,68 +15,40 @@ use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
 use OCP\IRequest;
-use Psr\Log\LoggerInterface;
+use OCP\Security\ICrypto;
 
 class PageController extends Controller {
 
-	/**
-	 * @var string|null
-	 */
-	private $userId;
-	/**
-	 * @var LoggerInterface
-	 */
-	private $logger;
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
-	 * @var IAppManager
-	 */
-	private $appManager;
-	/**
-	 * @var IInitialState
-	 */
-	private $initialStateService;
-	/**
-	 * @var MiroAPIService
-	 */
-	private $miroAPIService;
-
-	public function __construct(string $appName,
+	public function __construct(
+		string $appName,
 		IRequest $request,
-		IConfig $config,
-		IAppManager $appManager,
-		IInitialState $initialStateService,
-		LoggerInterface $logger,
-		MiroAPIService $miroAPIService,
-		?string $userId) {
+		private IConfig $config,
+		private IAppManager $appManager,
+		private IInitialState $initialStateService,
+		private MiroAPIService $miroAPIService,
+		private ICrypto $crypto,
+		private ?string $userId,
+	) {
 		parent::__construct($appName, $request);
-		$this->userId = $userId;
-		$this->logger = $logger;
-		$this->config = $config;
-		$this->appManager = $appManager;
-		$this->initialStateService = $initialStateService;
-		$this->miroAPIService = $miroAPIService;
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 *
 	 * @return TemplateResponse
 	 * @throws \Exception
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function index(): TemplateResponse {
 		$token = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
-		// don't expose the client secret to users
-		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret') !== '';
+		$clientID = $clientID === '' ? '' : $this->crypto->decrypt($clientID);
+		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
 		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
 
 		$miroUserId = $this->config->getUserValue($this->userId, Application::APP_ID, 'user_id');
@@ -89,7 +61,8 @@ class PageController extends Controller {
 		$pageInitialState = [
 			'token' => $token ? 'dummyTokenContent' : '',
 			'client_id' => $clientID,
-			'client_secret' => $clientSecret,
+			// don't expose the client secret to users
+			'client_secret' => $clientSecret !== '',
 			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,

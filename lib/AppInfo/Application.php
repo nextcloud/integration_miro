@@ -21,11 +21,6 @@ use OCP\IConfig;
 use OCP\Security\CSP\AddContentSecurityPolicyEvent;
 use OCP\Util;
 
-/**
- * Class Application
- *
- * @package OCA\Miro\AppInfo
- */
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'integration_miro';
 
@@ -34,11 +29,6 @@ class Application extends App implements IBootstrap {
 	public const MIRO_DOMAIN = 'https://miro.com';
 	public const MIRO_SUBDOMAINS = 'https://*.miro.com';
 
-	/**
-	 * Constructor
-	 *
-	 * @param array $urlParams
-	 */
 	public function __construct(array $urlParams = []) {
 		parent::__construct(self::APP_ID, $urlParams);
 	}
@@ -51,11 +41,11 @@ class Application extends App implements IBootstrap {
 		$context->injectFn(function (
 			IInitialState $initialState,
 			IConfig $config,
-			?string $userId
+			?string $userId,
 		) {
 			$overrideClick = $config->getAppValue(Application::APP_ID, 'override_link_click', '0') === '1';
 
-			// TODO why not making it use-specific?
+			// TODO why not making it user-specific?
 			$initialState->provideInitialState('override_link_click', $overrideClick);
 			Util::addScript(self::APP_ID, self::APP_ID . '-standalone');
 		});

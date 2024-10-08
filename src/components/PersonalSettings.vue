@@ -114,10 +114,7 @@ export default {
 					showSuccess(t('integration_miro', 'Miro options saved'))
 				}
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to save Miro options')
-					+ ': ' + (error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to save Miro options'))
 				console.error(error)
 			}).then(() => {
 				this.loading = false

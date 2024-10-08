@@ -127,10 +127,7 @@ export default {
 			axios.put(url, req).then((response) => {
 				showSuccess(t('integration_miro', 'Miro admin options saved'))
 			}).catch((error) => {
-				showError(
-					t('integration_miro', 'Failed to save Miro admin options')
-					+ ': ' + (error.response?.request?.responseText ?? '')
-				)
+				showError(t('integration_miro', 'Failed to save Miro admin options'))
 				console.error(error)
 			})
 		},

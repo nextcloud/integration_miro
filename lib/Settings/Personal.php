@@ -3,40 +3,21 @@
 namespace OCA\Miro\Settings;
 
 use OCA\Miro\AppInfo\Application;
-use OCA\Miro\Service\MiroAPIService;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
 
+use OCP\Security\ICrypto;
 use OCP\Settings\ISettings;
 
 class Personal implements ISettings {
 
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
-	 * @var IInitialState
-	 */
-	private $initialStateService;
-	/**
-	 * @var string|null
-	 */
-	private $userId;
-	/**
-	 * @var MiroAPIService
-	 */
-	private $miroAPIService;
-
-	public function __construct(IConfig $config,
-		IInitialState $initialStateService,
-		MiroAPIService $miroAPIService,
-		?string $userId) {
-		$this->config = $config;
-		$this->initialStateService = $initialStateService;
-		$this->userId = $userId;
-		$this->miroAPIService = $miroAPIService;
+	public function __construct(
+		private IConfig $config,
+		private IInitialState $initialStateService,
+		private ICrypto $crypto,
+		private ?string $userId,
+	) {
 	}
 
 	/**
@@ -49,14 +30,15 @@ class Personal implements ISettings {
 
 		// for OAuth
 		$clientID = $this->config->getAppValue(Application::APP_ID, 'client_id');
-		// don't expose the client secret to users
-		$clientSecret = ($this->config->getAppValue(Application::APP_ID, 'client_secret') !== '');
+		$clientID = $clientID === '' ? '' : $this->crypto->decrypt($clientID);
+		$clientSecret = $this->config->getAppValue(Application::APP_ID, 'client_secret');
 		$usePopup = $this->config->getAppValue(Application::APP_ID, 'use_popup', '0') === '1';
 
 		$userConfig = [
 			'token' => $token ? 'dummyTokenContent' : '',
 			'client_id' => $clientID,
-			'client_secret' => $clientSecret,
+			// don't expose the client secret to users
+			'client_secret' => $clientSecret !== '',
 			'use_popup' => $usePopup,
 			'user_id' => $miroUserId,
 			'user_name' => $miroUserName,

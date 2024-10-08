@@ -11,63 +11,38 @@
 
 namespace OCA\Miro\Controller;
 
-use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
-use OCP\IConfig;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 
 class MiroAPIController extends Controller {
 
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-	/**
-	 * @var MiroAPIService
-	 */
-	private $miroAPIService;
-	/**
-	 * @var string|null
-	 */
-	private $userId;
-	/**
-	 * @var string
-	 */
-	private $accessToken;
-	/**
-	 * @var IURLGenerator
-	 */
-	private $urlGenerator;
-
-	public function __construct(string $appName,
+	public function __construct(
+		string $appName,
 		IRequest $request,
-		IConfig $config,
-		IURLGenerator $urlGenerator,
-		MiroAPIService $miroAPIService,
-		?string $userId) {
+		private IURLGenerator $urlGenerator,
+		private MiroAPIService $miroAPIService,
+		private ?string $userId,
+	) {
 		parent::__construct($appName, $request);
-		$this->config = $config;
-		$this->miroAPIService = $miroAPIService;
-		$this->userId = $userId;
-		$this->accessToken = $this->config->getUserValue($this->userId, Application::APP_ID, 'token');
-		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
 	 * get miro user avatar
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 *
 	 * @param string $userId
 	 * @param int $useFallback
 	 * @return DataDisplayResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function getUserAvatar(string $userId, int $useFallback = 1) {
 		$result = $this->miroAPIService->getUserAvatar($this->userId, $userId);
 		if (isset($result['avatarContent'])) {
@@ -84,13 +59,13 @@ class MiroAPIController extends Controller {
 
 	/**
 	 * get miro team icon/avatar
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 *
 	 * @param string $teamId
 	 * @param int $useFallback
 	 * @return DataDisplayResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function getTeamAvatar(string $teamId, int $useFallback = 1) {
 		$result = $this->miroAPIService->getTeamAvatar($this->userId, $teamId, $this->miroUrl);
 		if (isset($result['avatarContent'])) {
@@ -108,6 +83,7 @@ class MiroAPIController extends Controller {
 	/**
 	 * @return DataResponse
 	 */
+	#[NoAdminRequired]
 	public function getBoards(): DataResponse {
 		$result = $this->miroAPIService->getMyBoards($this->userId);
 		if (isset($result['error'])) {
@@ -124,6 +100,7 @@ class MiroAPIController extends Controller {
 	 * @return DataResponse
 	 * @throws \Exception
 	 */
+	#[NoAdminRequired]
 	public function createBoard(string $name, string $description, string $teamId): DataResponse {
 		$result = $this->miroAPIService->createBoard($this->userId, $name, $description, $teamId);
 		if (isset($result['error'])) {
@@ -138,6 +115,7 @@ class MiroAPIController extends Controller {
 	 * @return DataResponse
 	 * @throws \Exception
 	 */
+	#[NoAdminRequired]
 	public function deleteBoard(string $id): DataResponse {
 		$result = $this->miroAPIService->deleteBoard($this->userId, $id);
 		if ($result === null) {

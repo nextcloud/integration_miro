@@ -10,6 +10,7 @@ use OCP\Http\Client\IClientService;
 use OCP\Http\Client\IResponse;
 use OCP\IConfig;
 use OCP\IL10N;
+use OCP\Security\ICrypto;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -72,9 +73,9 @@ class MiroAPIServiceTest extends TestCase {
 	 */
 	private $boardResponse;
 
-	private $defaultOptions = [
+	private array $defaultOptions = [
 		'headers' => [
-			'Authorization' => 'Bearer secret token',
+			'Authorization' => 'Bearer the-token',
 			'Accept' => 'application/json',
 			'User-Agent' => Application::INTEGRATION_USER_AGENT,
 		],
@@ -86,6 +87,7 @@ class MiroAPIServiceTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
+		$this->crypto = $this->createMock(ICrypto::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->l10n = $this->createMock(IL10N::class);
 		$this->config = $this->createMock(IConfig::class);
@@ -99,9 +101,9 @@ class MiroAPIServiceTest extends TestCase {
 			$user = 'user' . $i;
 			$team = 'team' . $i;
 			$userValues = array_merge($userValues, [
-				[$user, Application::APP_ID, 'refresh_token', '', 'secret refresh token'],
+				[$user, Application::APP_ID, 'refresh_token', '', $this->crypto->encrypt('the-refresh-token')],
 				[$user, Application::APP_ID, 'token_expires_at', '', (new Datetime())->getTimestamp() + 3600],
-				[$user, Application::APP_ID, 'token', '', 'secret token'],
+				[$user, Application::APP_ID, 'token', '', $this->crypto->encrypt('the-token')],
 				[$user, Application::APP_ID, 'team_id', '', $team],
 			]);
 		}
@@ -135,19 +137,25 @@ class MiroAPIServiceTest extends TestCase {
 			$this->logger,
 			$this->l10n,
 			$this->config,
+			$this->crypto,
 			$this->clientService,
 		);
 	}
 
 	public function testGetUserAvatar() {
-		$this->client->expects($this->exactly(6))->method('get')->willReturnMap([
-			[Application::MIRO_API_BASE_URL . '/users/user1_miro/image', $this->defaultOptions, $this->imageResponse],
-			[Application::MIRO_API_BASE_URL . '/users/user2_miro/image', $this->defaultOptions, $this->emptyResponse],
-			[Application::MIRO_API_BASE_URL . '/users/user2_miro/image/default', $this->defaultOptions, $this->imageResponse],
-			[Application::MIRO_API_BASE_URL . '/users/user3_miro/image', $this->defaultOptions, $this->emptyResponse],
-			[Application::MIRO_API_BASE_URL . '/users/user3_miro/image/default', $this->defaultOptions, $this->emptyResponse],
-			[Application::MIRO_API_BASE_URL . '/users/user3_miro', $this->defaultOptions, $this->jsonResponse],
-		]);
+		$responseMap = [
+			Application::MIRO_API_BASE_URL . '/users/user1_miro/image' => $this->imageResponse,
+			Application::MIRO_API_BASE_URL . '/users/user2_miro/image' => $this->emptyResponse,
+			Application::MIRO_API_BASE_URL . '/users/user2_miro/image/default' => $this->imageResponse,
+			Application::MIRO_API_BASE_URL . '/users/user3_miro/image' => $this->emptyResponse,
+			Application::MIRO_API_BASE_URL . '/users/user3_miro/image/default' => $this->emptyResponse,
+			Application::MIRO_API_BASE_URL . '/users/user3_miro' => $this->jsonResponse,
+		];
+		$this->client->expects($this->exactly(6))
+			->method('get')
+			->willReturnCallback(function ($url, $config) use ($responseMap) {
+				return $responseMap[$url];
+			});
 
 		$this->assertEquals(['avatarContent' => 'image'], $this->service->getUserAvatar('user1', 'user1_miro'));
 		$this->assertEquals(['avatarContent' => 'image'], $this->service->getUserAvatar('user2', 'user2_miro'));
@@ -155,21 +163,33 @@ class MiroAPIServiceTest extends TestCase {
 	}
 
 	public function testGetTeamAvatar() {
-		$this->client->expects($this->exactly(3))->method('get')->willReturnMap([
-			[Application::MIRO_API_BASE_URL . '/teams/team1/image', $this->defaultOptions, $this->imageResponse],
-			[Application::MIRO_API_BASE_URL . '/teams/team2/image', $this->defaultOptions, $this->emptyResponse],
-			[Application::MIRO_API_BASE_URL . '/teams/team2', $this->defaultOptions, $this->jsonResponse],
-		]);
+		$responseMap = [
+			Application::MIRO_API_BASE_URL . '/teams/team1/image' => $this->imageResponse,
+			Application::MIRO_API_BASE_URL . '/teams/team2/image' => $this->emptyResponse,
+			Application::MIRO_API_BASE_URL . '/teams/team2' => $this->jsonResponse,
+		];
+
+		$this->client->expects($this->exactly(3))
+			->method('get')
+			->willReturnCallback(function ($url, $config) use ($responseMap) {
+				return $responseMap[$url];
+			});
 
 		$this->assertEquals(['avatarContent' => 'image'], $this->service->getTeamAvatar('user1', 'team1'));
 		$this->assertEquals(['teamInfo' => ['id' => 'miro']], $this->service->getTeamAvatar('user2', 'team2'));
 	}
 
 	public function testGetMyBoards() {
-		$this->client->expects($this->exactly(2))->method('get')->willReturnMap([
-			[Application::MIRO_API_BASE_URL . '/v2/boards?team_id=team1&limit=50&sort=last_modified', $this->defaultOptions, $this->errorResponse],
-			[Application::MIRO_API_BASE_URL . '/v2/boards?team_id=team2&limit=50&sort=last_modified', $this->defaultOptions, $this->boardsResponse],
-		]);
+		$responseMap = [
+			Application::MIRO_API_BASE_URL . '/v2/boards?team_id=team1&limit=50&sort=last_modified' => $this->errorResponse,
+			Application::MIRO_API_BASE_URL . '/v2/boards?team_id=team2&limit=50&sort=last_modified' => $this->boardsResponse,
+		];
+
+		$this->client->expects($this->exactly(2))
+			->method('get')
+			->willReturnCallback(function ($url, $config) use ($responseMap) {
+				return $responseMap[$url];
+			});
 
 		$this->assertEquals(['error' => 'error'], $this->service->getMyBoards('user1'));
 		$this->assertEquals([['createdBy' => ['name' => 'miro'], 'createdByName' => 'miro', 'trash' => false]], $this->service->getMyBoards('user2'));
@@ -189,19 +209,27 @@ class MiroAPIServiceTest extends TestCase {
 				'teamAccess' => 'edit',
 			],
 		];
-		$this->client->expects($this->exactly(2))->method('post')->willReturnMap([
-			[Application::MIRO_API_BASE_URL . '/v2/boards', array_merge($this->defaultOptions, ['json' => array_merge(['name' => 'board1', 'description' => 'description1', 'teamId' => 'team1'], $baseParams)]), $this->errorResponse],
-			[Application::MIRO_API_BASE_URL . '/v2/boards', array_merge($this->defaultOptions, ['json' => array_merge(['name' => 'board2', 'description' => 'description2', 'teamId' => 'team2'], $baseParams)]), $this->boardResponse],
-		]);
+		$this->client->expects($this->exactly(2))
+			->method('post')
+			->willReturnCallback(function ($url, $config) {
+				if ($config['json']['name'] === 'board1') {
+					return $this->errorResponse;
+				} elseif ($config['json']['name'] === 'board2') {
+					return $this->boardResponse;
+				}
+				return null;
+			});
 
 		$this->assertEquals(['error' => 'error'], $this->service->createBoard('user1', 'board1', 'description1', 'team1'));
 		$this->assertEquals(['createdBy' => ['name' => 'miro'], 'createdByName' => 'miro', 'trash' => false], $this->service->createBoard('user2', 'board2', 'description2', 'team2'));
 	}
 
 	public function testDeleteBoard() {
-		$this->client->expects($this->exactly(1))->method('delete')->willReturnMap([
-			[Application::MIRO_API_BASE_URL . '/v2/boards/board1', $this->defaultOptions, $this->jsonResponse],
-		]);
+		$this->client->expects($this->exactly(1))
+			->method('delete')
+			->willReturnCallback(function ($url, $config) {
+				return $this->jsonResponse;
+			});
 
 		$this->assertEquals(['id' => 'miro'], $this->service->deleteBoard('user1', 'board1'));
 	}
