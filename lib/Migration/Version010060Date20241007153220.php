@@ -17,7 +17,7 @@ use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 use OCP\Security\ICrypto;
 
-class Version020000Date20241007153220 extends SimpleMigrationStep {
+class Version010060Date20241007153220 extends SimpleMigrationStep {
 
 	public function __construct(
 		private IDBConnection $connection,
