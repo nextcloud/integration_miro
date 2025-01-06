@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.0.6 - 2025-01-06
+### Fixed
+- Fix credentials handling
+
 ## 1.0.5 - 2024-08-21
 ### Added
 - Support Nextcloud 30
