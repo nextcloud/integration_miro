@@ -15,8 +15,10 @@ use DateTime;
 use OCA\Miro\AppInfo\Application;
 use OCA\Miro\Service\MiroAPIService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
+use OCP\AppFramework\Http\Attribute\PasswordConfirmationRequired;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -112,6 +114,24 @@ class ConfigController extends Controller {
 	 * @return DataResponse
 	 */
 	public function setAdminConfig(array $values): DataResponse {
+		foreach ($values as $key => $value) {
+			if (in_array($key, ['client_id', 'client_secret'], true)) {
+				return new DataResponse([], Http::STATUS_BAD_REQUEST);
+			} else {
+				$this->config->setAppValue(Application::APP_ID, $key, $value);
+			}
+		}
+		return new DataResponse(1);
+	}
+
+	/**
+	 * set admin config values
+	 *
+	 * @param array $values
+	 * @return DataResponse
+	 */
+	#[PasswordConfirmationRequired]
+	public function setSensitiveAdminConfig(array $values): DataResponse {
 		foreach ($values as $key => $value) {
 			if (in_array($key, ['client_id', 'client_secret'], true) && $value !== '') {
 				$encryptedValue = $this->crypto->encrypt($value);

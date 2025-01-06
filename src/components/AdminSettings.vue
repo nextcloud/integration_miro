@@ -74,8 +74,10 @@ import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadi
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-import { delay } from '../utils.js'
 import { showSuccess, showError } from '@nextcloud/dialogs'
+import { confirmPassword } from '@nextcloud/password-confirmation'
+
+import { delay } from '../utils.js'
 
 export default {
 	name: 'AdminSettings',
@@ -106,24 +108,29 @@ export default {
 
 	methods: {
 		onUsePopupChanged(newValue) {
-			this.saveOptions({ use_popup: newValue ? '1' : '0' })
+			this.saveOptions({ use_popup: newValue ? '1' : '0' }, false)
 		},
 		onOverrideChanged(newValue) {
-			this.saveOptions({ override_link_click: newValue ? '1' : '0' })
+			this.saveOptions({ override_link_click: newValue ? '1' : '0' }, false)
 		},
 		onInput() {
 			delay(() => {
 				this.saveOptions({
 					client_id: this.state.client_id,
 					client_secret: this.state.client_secret,
-				})
+				}, true)
 			}, 2000)()
 		},
-		saveOptions(values) {
+		async saveOptions(values, sensitive = true) {
+			if (sensitive) {
+				await confirmPassword()
+			}
 			const req = {
 				values,
 			}
-			const url = generateUrl('/apps/integration_miro/admin-config')
+			const url = sensitive
+				? generateUrl('/apps/integration_miro/sensitive-admin-config')
+				: generateUrl('/apps/integration_miro/admin-config')
 			axios.put(url, req).then((response) => {
 				showSuccess(t('integration_miro', 'Miro admin options saved'))
 			}).catch((error) => {
