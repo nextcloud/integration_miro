@@ -4,7 +4,7 @@
 	<name>Miro integration</name>
 	<summary>Integration of Miro</summary>
 	<description><![CDATA[Miro integration lets users create boards, share board links and open boards directly in Nextcloud.]]></description>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 	<licence>agpl</licence>
 	<author>Julien Veyssier</author>
 	<namespace>Miro</namespace>
@@ -19,7 +19,7 @@
 	<screenshot>https://github.com/nextcloud/integration_miro/raw/main/img/screenshot2.jpg</screenshot>
 	<screenshot>https://github.com/nextcloud/integration_miro/raw/main/img/screenshot3.jpg</screenshot>
 	<dependencies>
-		<nextcloud min-version="27" max-version="31"/>
+		<nextcloud min-version="27" max-version="32"/>
 	</dependencies>
 	<settings>
 		<admin>OCA\Miro\Settings\Admin</admin>
