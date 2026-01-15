@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Nextcloud - Miro
  *
@@ -215,8 +216,8 @@ class ConfigController extends Controller {
 					$this->config->deleteUserValue($this->userId, Application::APP_ID, 'oauth_origin');
 					if ($oauthOrigin === 'settings') {
 						return new RedirectResponse(
-							$this->urlGenerator->linkToRoute('settings.PersonalSettings.index', ['section' => 'connected-accounts']) .
-							'?miroToken=success'
+							$this->urlGenerator->linkToRoute('settings.PersonalSettings.index', ['section' => 'connected-accounts'])
+							. '?miroToken=success'
 						);
 					} elseif ($oauthOrigin === 'app') {
 						return new RedirectResponse(
@@ -230,8 +231,8 @@ class ConfigController extends Controller {
 			$result = $this->l->t('Error during OAuth exchanges');
 		}
 		return new RedirectResponse(
-			$this->urlGenerator->linkToRoute('settings.PersonalSettings.index', ['section' => 'connected-accounts']) .
-			'?miroToken=error&message=' . urlencode($result)
+			$this->urlGenerator->linkToRoute('settings.PersonalSettings.index', ['section' => 'connected-accounts'])
+			. '?miroToken=error&message=' . urlencode($result)
 		);
 	}
 
